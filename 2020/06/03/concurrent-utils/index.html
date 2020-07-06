@@ -164,7 +164,24 @@ public class ConcurrentUtils {
       <a href="/2020/06/02/harbor/" class="link f-fr">Harbor使用历程⟶</a>
     
   </footer>
-</section></div>
+</section>
+
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'df0939e6bbcc32f66c96',
+        clientSecret: '698521e751c5804f9a00471bf21c7ab0c3d1cf8e',
+        id: location.pathname,
+        repo: 'w0nwig.github.io',
+        owner: 'w0nwig',
+        admin: 'w0nwig'
+    })
+    console.log(gitalk)
+    gitalk.render('gitalk-container')
+</script>
+</div>
     <footer id="footer" class="f-cf">
   rongjun0821@gmail.com
   

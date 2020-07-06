@@ -176,7 +176,24 @@ public class ABC implements Runnable {
       <a href="/2020/06/08/thread-lifecycle/" class="link f-fr">Java线程生命周期图⟶</a>
     
   </footer>
-</section></div>
+</section>
+
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'df0939e6bbcc32f66c96',
+        clientSecret: '698521e751c5804f9a00471bf21c7ab0c3d1cf8e',
+        id: location.pathname,
+        repo: 'w0nwig.github.io',
+        owner: 'w0nwig',
+        admin: 'w0nwig'
+    })
+    console.log(gitalk)
+    gitalk.render('gitalk-container')
+</script>
+</div>
     <footer id="footer" class="f-cf">
   rongjun0821@gmail.com
   
