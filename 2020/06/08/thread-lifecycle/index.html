@@ -14,13 +14,13 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1002.png">
 <meta property="article:published_time" content="2020-06-08T11:24:37.381Z">
-<meta property="article:modified_time" content="2020-07-07T14:27:07.897Z">
+<meta property="article:modified_time" content="2020-07-07T16:27:19.141Z">
 <meta property="article:author" content="w0nwig">
 <meta property="article:tag" content="Blog">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1002.png">
   
-    <link rel="icon" href="/images/icon.001.png">
+    <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
   <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
   <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -86,19 +86,19 @@
 <ul>
 <li>对象获取锁失败或者获得锁的状态下调用wait方法后会释放锁，将进入等待队列等待被唤醒，当其他线程调用notify或notifyAll唤醒此线程，此线程将进入锁池去竞争锁，<strong>进入锁池的线程不一定能获得锁</strong>，还有可能回到等待队列。即等待队列和锁池是两个概念，不要搞混</li>
 <li>线程进入阻塞状态，不会释放锁，满足条件时可以回到Running状态</li>
-<li>新建(new)和死亡(dead)是单向的状态，不可重复<br><img src="/images/thread-lifecycle-0.png" alt="image"></li>
+<li>新建(new)和死亡(dead)是单向的状态，不可重复<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-0.png" alt="image"></li>
 </ul>
 <h2 id="图2"><a href="#图2" class="headerlink" title="图2"></a>图2</h2><blockquote>
 <p>注意点</p>
 </blockquote>
 <ul>
-<li>图中的LockSupport类来自J.U.C包，在AQS等地方都有用到，可让当前线程释放资源挂载和取消挂载竞争资源<br><img src="/images/thread-lifecycle-1.png" alt="image"></li>
+<li>图中的LockSupport类来自J.U.C包，在AQS等地方都有用到，可让当前线程释放资源挂载和取消挂载竞争资源<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-1.png" alt="image"></li>
 </ul>
 <h2 id="图3"><a href="#图3" class="headerlink" title="图3"></a>图3</h2><blockquote>
 <p>注意点</p>
 </blockquote>
 <ul>
-<li>和图1类似，相比图2，遗漏了当线程中断后进入死亡状态的情形<br><img src="/images/thread-lifecycle-2.png" alt="image"></li>
+<li>和图1类似，相比图2，遗漏了当线程中断后进入死亡状态的情形<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-2.png" alt="image"></li>
 </ul>
 
   </article>
@@ -107,7 +107,7 @@
       <a href="/2020/06/09/threads-print-abc/" class="link f-fl">⟵Java线程同步使用案例</a>
     
     
-      <a href="/2020/06/03/concurrent-utils/" class="link f-fr">CountDownLatch解决多线程问题⟶</a>
+      <a href="/2020/06/03/concurrent-utils/" class="link f-fr">CountDownLatch解决同步问题⟶</a>
     
   </footer>
 </section>

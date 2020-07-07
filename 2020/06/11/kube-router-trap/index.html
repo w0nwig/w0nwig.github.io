@@ -14,13 +14,13 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1001.png">
 <meta property="article:published_time" content="2020-06-11T11:54:12.882Z">
-<meta property="article:modified_time" content="2020-07-07T14:27:07.865Z">
+<meta property="article:modified_time" content="2020-07-07T16:27:19.135Z">
 <meta property="article:author" content="w0nwig">
 <meta property="article:tag" content="Blog">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1001.png">
   
-    <link rel="icon" href="/images/icon.001.png">
+    <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
   <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
   <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
@@ -82,7 +82,7 @@
   <article class="content">
     <h2 id="导语"><a href="#导语" class="headerlink" title="导语"></a>导语</h2><p>kube-router大名鼎鼎，’A turn-key Kubernetes networking solution purpose built for operational simplicity and performance’.总结起来就一句：<strong>操作简单，性能高效</strong>。目标是取代kube-proxy和一众cni插件（如flannel、calico等）。</p>
 <p>kube-router采用lvs实现svc网络，采用bgp实现pod网络</p>
-<p>用一副图，概括它的主要特性：<br><img src="/images/kube-router-feature.png" alt="upload successful"></p>
+<p>用一副图，概括它的主要特性：<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/kube-router-feature.png" alt="upload successful"></p>
 <h3 id="选型考虑"><a href="#选型考虑" class="headerlink" title="选型考虑"></a>选型考虑</h3><p>我们本地机房的开发环境和自动化测试环境有自己的特点，我们需要连上公司的办公网络，就可以直接访问集群里的PodIP和CluterIP，这样更方便测试和排查问题，所以需要一种机制把集群里的Pod网络和虚拟ClusterIP网络给引出来。</p>
 <h3 id="Kube-router替代kube-proxy可行性分析"><a href="#Kube-router替代kube-proxy可行性分析" class="headerlink" title="Kube-router替代kube-proxy可行性分析"></a>Kube-router替代kube-proxy可行性分析</h3><p>kube-proxy的作用主要是用于监听API server中 service 和endpoint的变化情况，并通过iptables或ipvs等为服务配置负载均衡。kube-router采用了相同技术的实现流量转发，服务发现。因此可以直接替代kubeproxy来为服务配置负载均衡</p>
 <h3 id="Kube-router替代flannel-Calico可行性分析"><a href="#Kube-router替代flannel-Calico可行性分析" class="headerlink" title="Kube-router替代flannel/Calico可行性分析"></a>Kube-router替代flannel/Calico可行性分析</h3><p>kubernetes 对网络的要求是：容器之间（包括同一台主机上的容器，和不同主机的容器）可以互相通信，容器和集群中所有的节点也能直接通信。</p>
@@ -98,7 +98,7 @@
 --cni-bin-dir=/opt/cni/bin 指定cni插件可执行文件路径
 --cni-conf-dir=/etc/cni/net.d 指定cni插件配置文件路径</code></pre><p>为支持网段的分配，还需要在controller-manager中加入如下配置：</p>
 <pre><code>--cluster-cidr=10.244.0.0/16 # 根据需要配置网段
---allocate-node-cidrs=true</code></pre><h3 id="踩坑经过"><a href="#踩坑经过" class="headerlink" title="踩坑经过"></a>踩坑经过</h3><p>2020.06.10 这一天，kube-router发布了pre-release版本，如图：<br><img src="/images/kube-router-v1.0.0-rc5.jpg" alt="upload successful"><br>由图可知，该版本需要清空iptables或者安装前重启机器</p>
+--allocate-node-cidrs=true</code></pre><h3 id="踩坑经过"><a href="#踩坑经过" class="headerlink" title="踩坑经过"></a>踩坑经过</h3><p>2020.06.10 这一天，kube-router发布了pre-release版本，如图：<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/kube-router-v1.0.0-rc5.jpg" alt="upload successful"><br>由图可知，该版本需要清空iptables或者安装前重启机器</p>
 <p>本人在这天修改了一个<code>--enable-ibgp=false</code>参数，修改为true并重启了daemonset的kube-router，结果集群网络炸了，部分pod无法ping通其他宿主机上的pod。第一时间肯定是回滚操作，enable-ibgp改回为false，依然无法恢复网络。</p>
 <p>排查到发现，才知道我们kube-router的镜像版本赫然写着：<strong>cloudnativelabs/kube-router</strong></p>
 <p>没有标签！！！ 意味着容器每次重启会去拉取最新的镜像版本。于是拉取了这一天刚刚发布的镜像版本。这个版本需要清空iptables或者安装前重启机器。而我显然没这么做，于是网络就炸了。</p>
