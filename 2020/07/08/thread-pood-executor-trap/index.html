@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ThreadPoolExecutor使用一坑 | w0nwig</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="用了一个简单线程池，程序竟然永远无法退出 ！？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadPoolExecutor使用一坑">
+<meta property="og:url" content="http://yoursite.com/2020/07/08/thread-pood-executor-trap/index.html">
+<meta property="og:site_name" content="w0nwig">
+<meta property="og:description" content="用了一个简单线程池，程序竟然永远无法退出 ！？">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1005.png">
+<meta property="article:published_time" content="2020-07-08T15:01:30.989Z">
+<meta property="article:modified_time" content="2020-07-08T15:09:49.983Z">
+<meta property="article:author" content="w0nwig">
+<meta property="article:tag" content="Blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1005.png">
+  
+    <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightBlock(block);
+      });
+    });
+  </script>
+  
+<link rel="stylesheet" href="/css/index.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body style="
+
+
+  background-color: #eff0f6
+
+">
+  <div id="container">
+    <nav id="nav">
+  <header class="header">
+    <a href="/" class="title">life is fantastic</a>
+  </header>
+  <div class="ctnWrap">
+    <div class="icons">
+      
+        
+          
+            <a href="https://github.com/w0nwig" target="_blank" class="nav-icn iconfont icon-github">·GitHub</a>
+          
+        
+      
+    </div>
+    <div class="menu">
+      
+        
+            <a href="/" class="nav-menu ">主页</a>
+          
+        
+            <a href="/archives" class="nav-menu ">归档</a>
+          
+        
+            <a href="/category" class="nav-menu ">分类</a>
+          
+        
+            <a href="/about" class="nav-menu ">关于</a>
+          
+        
+      
+    </div>
+  </div>
+</nav>
+    <div id="main"><section class="article">
+  <h2 class="title">ThreadPoolExecutor使用一坑</h2>
+  <p class="sub">Jul 8, 2020</p>
+  <article class="content">
+    <p>先来看一段代码</p>
+<pre><code class="java">public class ThreadMain {
+
+    private static class SimpleThreadFactory implements ThreadFactory {
+        private static final AtomicInteger threadNumber = new AtomicInteger(1);
+        private final String namePrefix;
+
+        public SimpleThreadFactory() {
+            namePrefix = &quot;simple-pool-thread-&quot;;
+        }
+
+        public Thread newThread(Runnable r) {
+            int i = threadNumber.getAndIncrement();
+            return new Thread(namePrefix + i);
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        ExecutorService executorService = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS,
+                new ArrayBlockingQueue&lt;&gt;(10), new SimpleThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
+
+        executorService.submit(() -&gt; {
+            try {
+                System.out.println(&quot;worker done&quot;);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            } finally {
+                countDownLatch.countDown();
+            }
+        });
+
+        countDownLatch.await();
+
+        System.out.println(&quot;main done&quot;);
+
+        executorService.shutdown();
+    }
+}</code></pre>
+<p>很简单的一段代码，main方法中用<code>ThreadPoolExecutor</code>定义了一个线程池，用CountDownLatch做同步，主线程在工作线程打印出<code>worker done</code>后，打印<code>main done</code>并退出。实际运行，发现控制台没有任何输出。问题出在哪呢？</p>
+<p>经过分析可知，工作线程没有执行任务，<code>countDownLatch</code>没有计数，于是主线程阻塞了，可为什么任务不执行呢？</p>
+<p>直接揭晓结果，看这段代码：</p>
+<pre><code>public Thread newThread(Runnable r) {
+    int i = threadNumber.getAndIncrement();
+    return new Thread(namePrefix + i);
+}</code></pre><p><code>SimpleThreadFactory</code>类实现<code>ThreadFactory</code>，用于自定义自己的线程工厂，需要实现<code>newThread</code>方法，其他有个Runnable类型的参数r，上面这段代码没有用到这个参数，被初始化的线程中待执行的任务为空，看下面这段Thread类中的代码：</p>
+<pre><code>@Override
+public void run() {
+    if (target != null) {
+        target.run();
+    }
+}</code></pre><p>target对应上面<code>newThread</code>方法中的参数r，那就明白了：线程池中初始化了一个线程，但这个线程没有任务，那任务自然不能被执行，打印任务不能完成，修改后的代码如下：</p>
+<pre><code class="java">public Thread newThread(Runnable r) {
+    int i = threadNumber.getAndIncrement();
+    return new Thread(r, namePrefix + i);
+}</code></pre>
+<p>之后程序可以正常运行退出</p>
+
+  </article>
+  <footer class="f-cf">
+    
+    
+      <a href="/2020/07/07/tab-helper/" class="link f-fr">Chrome插件：Tab Helper⟶</a>
+    
+  </footer>
+</section>
+
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'df0939e6bbcc32f66c96',
+        clientSecret: '698521e751c5804f9a00471bf21c7ab0c3d1cf8e',
+        id: location.pathname,
+        repo: 'w0nwig.github.io',
+        owner: 'w0nwig',
+        admin: ['w0nwig']
+    })
+    gitalk.render('gitalk-container')
+</script>
+</div>
+    <footer id="footer" class="f-cf">
+  rongjun0821@gmail.com
+  
+    
+      
+        · <a href="https://github.com/w0nwig" target="_blank" class="nav-icn">GitHub</a>
+      
+    
+  
+  <span class="copyright">All rights reserved @w0nwig</span>
+</footer>
+  </div>
+</body>
+</html>
