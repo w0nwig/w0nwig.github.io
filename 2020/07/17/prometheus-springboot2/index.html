@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Prometheus自定义Exporter在SpringBoot2.0的实践 | w0nwig</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="提供一种简单易理解的方式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Prometheus自定义Exporter在SpringBoot2.0的实践">
+<meta property="og:url" content="http://yoursite.com/2020/07/17/prometheus-springboot2/index.html">
+<meta property="og:site_name" content="w0nwig">
+<meta property="og:description" content="提供一种简单易理解的方式">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1007.png">
+<meta property="article:published_time" content="2020-07-17T14:32:23.480Z">
+<meta property="article:modified_time" content="2020-07-22T11:47:50.210Z">
+<meta property="article:author" content="w0nwig">
+<meta property="article:tag" content="Prometheus">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1007.png">
+  
+    <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightBlock(block);
+      });
+    });
+  </script>
+  
+<link rel="stylesheet" href="/css/index.css">
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body style="
+
+
+  background-color: #eff0f6
+
+">
+  <div id="container">
+    <nav id="nav">
+  <header class="header">
+    <a href="/" class="title">life is fantastic</a>
+  </header>
+  <div class="ctnWrap">
+    <div class="icons">
+      
+        
+          
+            <a href="https://github.com/w0nwig" target="_blank" class="nav-icn iconfont icon-github">·GitHub</a>
+          
+        
+      
+    </div>
+    <div class="menu">
+      
+        
+            <a href="/" class="nav-menu ">主页</a>
+          
+        
+            <a href="/archives" class="nav-menu ">归档</a>
+          
+        
+            <a href="/category" class="nav-menu ">分类</a>
+          
+        
+            <a href="/about" class="nav-menu ">关于</a>
+          
+        
+      
+    </div>
+  </div>
+</nav>
+    <div id="main"><section class="article">
+  <h2 class="title">Prometheus自定义Exporter在SpringBoot2.0的实践</h2>
+  <p class="sub">Jul 17, 2020</p>
+  <article class="content">
+    <h1 id="引语"><a href="#引语" class="headerlink" title="引语"></a>引语</h1><p>SpringBoot升级到2.0后，重构了很大一部分代码，导致原官方提供SpringBoot-Starter不再适用，可以用<code>io.micrometer:micrometer-registry-prometheus</code>配合<code>spring-boot-starter-actuator</code>适用，笔者通过实践验证可以实现，但发现采集的指标过多，包括JVM等监控指标，笔者只想暴露自己自定义的一种指标，未搜索到可以关闭部分指标的配置，于是准备从源码入手完成实现</p>
+<p>参考官方实现，基于SpringBoot Actuator，给出一种简单的实现思路，直接贴出代码</p>
+<blockquote>
+<p>依赖项【笔者基于Gradle，Maven类似】：</p>
+</blockquote>
+<pre><code>buildscript {
+    ext[&quot;springBootVersion&quot;] = &quot;2.2.7.RELEASE&quot;
+}
+// 依赖版本管理
+dependencyManagement {
+        dependencies {
+            imports {
+                mavenBom &quot;org.springframework.boot:spring-boot-dependencies:${springBootVersion}&quot;
+            }
+
+            dependency &quot;io.prometheus:simpleclient:0.8.1&quot;
+        }
+    }
+}
+
+// 添加依赖
+compile &quot;org.springframework.boot:spring-boot-starter-actuator&quot;
+compile &#39;io.prometheus:simpleclient&#39;
+</code></pre><blockquote>
+<p>自定义类一：</p>
+</blockquote>
+<pre><code>@WebEndpoint(id = &quot;prometheus&quot;)
+public class MyPrometheusEndpoint {
+    private final CollectorRegistry collectorRegistry;
+
+    public MyPrometheusEndpoint(CollectorRegistry collectorRegistry) {
+        this.collectorRegistry = collectorRegistry;
+    }
+
+    @ReadOperation(produces = TextFormat.CONTENT_TYPE_004)
+    public String scrape() {
+        try {
+            Writer writer = new StringWriter();
+            TextFormat.write004(writer, this.collectorRegistry.metricFamilySamples());
+            return writer.toString();
+        } catch (IOException ex) {
+            // This actually never happens since StringWriter::write() doesn&#39;t throw any
+            // IOException
+            throw new RuntimeException(&quot;Writing metrics failed&quot;, ex);
+        }
+    }
+}</code></pre><blockquote>
+<p>自定义类二：</p>
+</blockquote>
+<pre><code>@Configuration
+public class MyPrometheusMetricsExportAutoConfiguration {
+
+    public static final CollectorRegistry collectorRegistry = new CollectorRegistry();
+
+    @Bean
+    public MyPrometheusEndpoint myPrometheusEndpoint() {
+        return new MyPrometheusEndpoint(collectorRegistry);
+    }
+
+}</code></pre><blockquote>
+<p>自定义类三【指标搜集类，自定义Collector】：</p>
+</blockquote>
+<pre><code>@Component
+@Slf4j
+public class MonitorCheckExporter extends Collector {
+
+    @Override
+    public List&lt;MetricFamilySamples&gt; collect() {
+        List&lt;MetricFamilySamples&gt; mfs = new ArrayList&lt;&gt;();
+
+        /*
+        * 指标采集逻辑
+        * */
+
+        return mfs;
+    }
+
+}</code></pre><blockquote>
+<p>SpringBoot启动类：</p>
+</blockquote>
+<pre><code>public class Application implements CommandLineRunner {
+
+    @Resource
+    private MonitorCheckExporter monitorCheckExporter;
+
+    public static void main(String[] args) {
+        SpringApplication sa = new SpringApplication(Application.class);
+        sa.run(args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        monitorCheckExporter.register(MyPrometheusMetricsExportAutoConfiguration.collectorRegistry);
+    }
+}</code></pre><p>至此，可实现SpringBoot2.0暴露/actuator/prometheus接口供prometheus拉取自定义指标的功能</p>
+
+  </article>
+  <footer class="f-cf">
+    
+    
+      <a href="/2020/07/17/sort-algorithm/" class="link f-fr">两种排序算法代码演示⟶</a>
+    
+  </footer>
+</section>
+
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'df0939e6bbcc32f66c96',
+        clientSecret: '698521e751c5804f9a00471bf21c7ab0c3d1cf8e',
+        id: location.pathname,
+        repo: 'w0nwig.github.io',
+        owner: 'w0nwig',
+        admin: ['w0nwig']
+    })
+    gitalk.render('gitalk-container')
+</script>
+</div>
+    <footer id="footer" class="f-cf">
+  rongjun0821@gmail.com
+  
+    
+      
+        · <a href="https://github.com/w0nwig" target="_blank" class="nav-icn">GitHub</a>
+      
+    
+  
+  <span class="copyright">All rights reserved @w0nwig</span>
+</footer>
+  </div>
+</body>
+</html>
