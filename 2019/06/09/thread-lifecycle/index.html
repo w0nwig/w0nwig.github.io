@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>容器监控 &amp; Prometheus 优秀GitBook推荐 | w0nwig</title>
+  <title>Java线程生命周期图 | w0nwig</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="推荐两位作者编写的GitBook">
+  <meta name="description" content="看懂三幅图，线程的生命周期基本就能搞懂了">
 <meta property="og:type" content="article">
-<meta property="og:title" content="容器监控 &amp; Prometheus 优秀GitBook推荐">
-<meta property="og:url" content="http://yoursite.com/2020/07/22/container-monitor-gitbook/index.html">
+<meta property="og:title" content="Java线程生命周期图">
+<meta property="og:url" content="http://yoursite.com/2019/06/09/thread-lifecycle/index.html">
 <meta property="og:site_name" content="w0nwig">
-<meta property="og:description" content="推荐两位作者编写的GitBook">
+<meta property="og:description" content="看懂三幅图，线程的生命周期基本就能搞懂了">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1008.png">
-<meta property="article:published_time" content="2020-07-22T11:47:50.210Z">
-<meta property="article:modified_time" content="2020-07-23T04:23:04.507Z">
+<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1002.png">
+<meta property="article:published_time" content="2019-06-09T14:33:12.000Z">
+<meta property="article:modified_time" content="2020-07-27T12:02:29.015Z">
 <meta property="article:author" content="w0nwig">
-<meta property="article:tag" content="Prometheus">
+<meta property="article:tag" content="Blog">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1008.png">
+<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1002.png">
   
     <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
@@ -77,23 +77,37 @@
   </div>
 </nav>
     <div id="main"><section class="article">
-  <h2 class="title">容器监控 &amp; Prometheus 优秀GitBook推荐</h2>
-  <p class="sub">Jul 22, 2020</p>
+  <h2 class="title">Java线程生命周期图</h2>
+  <p class="sub">Jun 9, 2019</p>
   <article class="content">
-    <p>笔者工作内容和容器监控相关，接触最多的云原生服务是prometheus、cadvisor、node-exporter等。<br>笔者从两位博主处学习到很多有用的知识，很多困惑得到了解答。</p>
-<p>两位作者编写的GitBook：</p>
+    <h2 id="图1"><a href="#图1" class="headerlink" title="图1"></a>图1</h2><blockquote>
+<p>注意点</p>
+</blockquote>
 <ul>
-<li><a href="https://yasongxu.gitbook.io/container-monitor/" target="_blank" rel="noopener">container-monitor</a></li>
-<li><a href="https://yunlzheng.gitbook.io/prometheus-book/" target="_blank" rel="noopener">prometheus-book</a></li>
+<li>对象获取锁失败或者获得锁的状态下调用wait方法后会释放锁，将进入等待队列等待被唤醒，当其他线程调用notify或notifyAll唤醒此线程，此线程将进入锁池去竞争锁，<strong>进入锁池的线程不一定能获得锁</strong>，还有可能回到等待队列。即等待队列和锁池是两个概念，不要搞混</li>
+<li>线程进入阻塞状态，不会释放锁，满足条件时可以回到Running状态</li>
+<li>新建(new)和死亡(dead)是单向的状态，不可重复<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-0.png" alt="image"></li>
+</ul>
+<h2 id="图2"><a href="#图2" class="headerlink" title="图2"></a>图2</h2><blockquote>
+<p>注意点</p>
+</blockquote>
+<ul>
+<li>图中的LockSupport类来自J.U.C包，在AQS等地方都有用到，可让当前线程释放资源挂载和取消挂载竞争资源<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-1.png" alt="image"></li>
+</ul>
+<h2 id="图3"><a href="#图3" class="headerlink" title="图3"></a>图3</h2><blockquote>
+<p>注意点</p>
+</blockquote>
+<ul>
+<li>和图1类似，相比图2，遗漏了当线程中断后进入死亡状态的情形<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-2.png" alt="image"></li>
 </ul>
 
   </article>
   <footer class="f-cf">
     
-      <a href="/2020/07/25/lru-java/" class="link f-fl">⟵LRU算法代码演示</a>
+      <a href="/2019/07/08/thread-pood-executor-trap/" class="link f-fl">⟵ThreadPoolExecutor使用一坑</a>
     
     
-      <a href="/2020/07/17/sort-algorithm/" class="link f-fr">两种排序算法代码演示⟶</a>
+      <a href="/2019/06/09/threads-print-abc/" class="link f-fr">Java线程同步使用案例⟶</a>
     
   </footer>
 </section>

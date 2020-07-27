@@ -8,13 +8,13 @@
   <meta name="description" content="提供一种简单易理解的方式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Prometheus自定义Exporter在SpringBoot2.0的实践">
-<meta property="og:url" content="http://yoursite.com/2020/07/17/prometheus-springboot2/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/07/17/prometheus-springboot2/index.html">
 <meta property="og:site_name" content="w0nwig">
 <meta property="og:description" content="提供一种简单易理解的方式">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1007.png">
-<meta property="article:published_time" content="2020-07-17T14:32:23.480Z">
-<meta property="article:modified_time" content="2020-07-22T11:47:50.210Z">
+<meta property="article:published_time" content="2019-07-17T14:33:12.000Z">
+<meta property="article:modified_time" content="2020-07-27T12:04:26.986Z">
 <meta property="article:author" content="w0nwig">
 <meta property="article:tag" content="Prometheus">
 <meta name="twitter:card" content="summary">
@@ -78,7 +78,7 @@
 </nav>
     <div id="main"><section class="article">
   <h2 class="title">Prometheus自定义Exporter在SpringBoot2.0的实践</h2>
-  <p class="sub">Jul 17, 2020</p>
+  <p class="sub">Jul 17, 2019</p>
   <article class="content">
     <h1 id="引语"><a href="#引语" class="headerlink" title="引语"></a>引语</h1><p>SpringBoot升级到2.0后，重构了很大一部分代码，导致原官方提供SpringBoot-Starter不再适用，可以用<code>io.micrometer:micrometer-registry-prometheus</code>配合<code>spring-boot-starter-actuator</code>适用，笔者通过实践验证可以实现，但发现采集的指标过多，包括JVM等监控指标，笔者只想暴露自己自定义的一种指标，未搜索到可以关闭部分指标的配置，于是准备从源码入手完成实现</p>
 <p>参考官方实现，基于SpringBoot Actuator，给出一种简单的实现思路，直接贴出代码</p>
@@ -179,10 +179,10 @@ public class MonitorCheckExporter extends Collector {
   </article>
   <footer class="f-cf">
     
-      <a href="/2020/07/22/container-monitor-gitbook/" class="link f-fl">⟵容器监控 &amp; Prometheus 优秀GitBook推荐</a>
+      <a href="/2020/06/02/harbor/" class="link f-fl">⟵Harbor高可用实践</a>
     
     
-      <a href="/2020/07/17/sort-algorithm/" class="link f-fr">两种排序算法代码演示⟶</a>
+      <a href="/2019/07/08/thread-pood-executor-trap/" class="link f-fr">ThreadPoolExecutor使用一坑⟶</a>
     
   </footer>
 </section>

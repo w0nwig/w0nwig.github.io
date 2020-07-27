@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Java线程生命周期图 | w0nwig</title>
+  <title>Health-Check-Exporter | w0nwig</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="看懂三幅图，线程的生命周期基本就能搞懂了">
+  <meta name="description" content="Prometheus自定义exporter，基于Go语言开发，可采集集群中所有Pod的健康检查耗时">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java线程生命周期图">
-<meta property="og:url" content="http://yoursite.com/2020/06/08/thread-lifecycle/index.html">
+<meta property="og:title" content="Health-Check-Exporter">
+<meta property="og:url" content="http://yoursite.com/2020/07/27/health-check-exporter/index.html">
 <meta property="og:site_name" content="w0nwig">
-<meta property="og:description" content="看懂三幅图，线程的生命周期基本就能搞懂了">
+<meta property="og:description" content="Prometheus自定义exporter，基于Go语言开发，可采集集群中所有Pod的健康检查耗时">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1002.png">
-<meta property="article:published_time" content="2020-06-08T11:24:37.381Z">
-<meta property="article:modified_time" content="2020-07-07T16:27:19.141Z">
+<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1010.png">
+<meta property="article:published_time" content="2020-07-27T12:14:07.127Z">
+<meta property="article:modified_time" content="2020-07-27T12:17:36.837Z">
 <meta property="article:author" content="w0nwig">
-<meta property="article:tag" content="Blog">
+<meta property="article:tag" content="云原生">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1002.png">
+<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1010.png">
   
     <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
@@ -77,37 +77,32 @@
   </div>
 </nav>
     <div id="main"><section class="article">
-  <h2 class="title">Java线程生命周期图</h2>
-  <p class="sub">Jun 8, 2020</p>
+  <h2 class="title">Health-Check-Exporter</h2>
+  <p class="sub">Jul 27, 2020</p>
   <article class="content">
-    <h2 id="图1"><a href="#图1" class="headerlink" title="图1"></a>图1</h2><blockquote>
-<p>注意点</p>
-</blockquote>
+    <h1 id="health-check-exporter"><a href="#health-check-exporter" class="headerlink" title="health-check-exporter"></a>health-check-exporter</h1><p>Prometheus自定义exporter，基于Go语言开发，可采集集群中所有Pod的健康检查耗时(单位：毫秒)</p>
+<p>Core Feature:</p>
 <ul>
-<li>对象获取锁失败或者获得锁的状态下调用wait方法后会释放锁，将进入等待队列等待被唤醒，当其他线程调用notify或notifyAll唤醒此线程，此线程将进入锁池去竞争锁，<strong>进入锁池的线程不一定能获得锁</strong>，还有可能回到等待队列。即等待队列和锁池是两个概念，不要搞混</li>
-<li>线程进入阻塞状态，不会释放锁，满足条件时可以回到Running状态</li>
-<li>新建(new)和死亡(dead)是单向的状态，不可重复<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-0.png" alt="image"></li>
+<li>对所有命名空间下的Pod发起livenessProbe指针调用，返回调用耗时，当无法访问时，返回-1</li>
 </ul>
-<h2 id="图2"><a href="#图2" class="headerlink" title="图2"></a>图2</h2><blockquote>
-<p>注意点</p>
-</blockquote>
+<p>提供启动参数</p>
 <ul>
-<li>图中的LockSupport类来自J.U.C包，在AQS等地方都有用到，可让当前线程释放资源挂载和取消挂载竞争资源<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-1.png" alt="image"></li>
+<li>web.listen-port 暴露的Http端口，默认80</li>
+<li>web.telemetry-path 访问指标的路径，默认/metrics</li>
 </ul>
-<h2 id="图3"><a href="#图3" class="headerlink" title="图3"></a>图3</h2><blockquote>
-<p>注意点</p>
-</blockquote>
-<ul>
-<li>和图1类似，相比图2，遗漏了当线程中断后进入死亡状态的情形<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/thread-lifecycle-2.png" alt="image"></li>
-</ul>
+<p>目前只暴露一个metric：<strong>container_health_check_duration_millisecond</strong></p>
+<pre><code># HELP container_health_check_duration_millisecond The time(millisecond) taken to invoke the health check interface
+# TYPE container_health_check_duration_millisecond gauge
+container_health_check_duration_millisecond{container_name=&quot;&quot;,namespace=&quot;kube-system&quot;,pod_name=&quot;coredns-67fc48b9d7-dtb9w&quot;} 9.297547e+06</code></pre><p>通过kubectl工具快速部署体验</p>
+<pre><code class="shell">kubectl create deploy health-check-exporter --image=registry.cn-hangzhou.aliyuncs.com/clo/health-check-exporter:1.0</code></pre>
+<p>GitHub仓库地址：<a href="https://github.com/w0nwig/health-check-exporter" target="_blank" rel="noopener">health-check-exporter</a></p>
+<p>笔者将在另一篇博文中介绍开发过程中用到的技术点和踩过的坑</p>
 
   </article>
   <footer class="f-cf">
     
-      <a href="/2020/06/09/threads-print-abc/" class="link f-fl">⟵Java线程同步使用案例</a>
     
-    
-      <a href="/2020/06/02/harbor/" class="link f-fr">Harbor高可用实践⟶</a>
+      <a href="/2020/07/25/lru-java/" class="link f-fr">LRU算法代码演示⟶</a>
     
   </footer>
 </section>
