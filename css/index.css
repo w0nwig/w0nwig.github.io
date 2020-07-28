@@ -157,7 +157,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 80px 100px;
   margin: 40px 0;
   background-color: white;
   color: #333; }
@@ -170,7 +169,8 @@ body {
       height: auto;
       display: block; }
   .project-card > .ctnWrap {
-    flex: 1; }
+    flex: 1;
+    margin-right: 30px; }
     .project-card > .ctnWrap > .title {
       font-weight: 600;
       font-size: 28px;
