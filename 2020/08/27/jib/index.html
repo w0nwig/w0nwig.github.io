@@ -3,17 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>w0nwig</title>
+  <title>镜像构建加速利器：JIB | w0nwig</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="personal blog based on hexo">
-<meta property="og:type" content="website">
-<meta property="og:title" content="w0nwig">
-<meta property="og:url" content="http://yoursite.com/page/3/index.html">
+  <meta name="description" content="持续集成好搭档，可有效加快Java应用镜像构建的速度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="镜像构建加速利器：JIB">
+<meta property="og:url" content="http://yoursite.com/2020/08/27/jib/index.html">
 <meta property="og:site_name" content="w0nwig">
-<meta property="og:description" content="personal blog based on hexo">
+<meta property="og:description" content="持续集成好搭档，可有效加快Java应用镜像构建的速度">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1019.png">
+<meta property="article:published_time" content="2020-08-27T06:09:06.826Z">
+<meta property="article:modified_time" content="2020-08-27T10:11:24.510Z">
 <meta property="article:author" content="w0nwig">
+<meta property="article:tag" content="CI">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1019.png">
   
     <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
@@ -71,80 +76,61 @@
     </div>
   </div>
 </nav>
-    <div id="main">
-  <div class="project-card">
+    <div id="main"><section class="article">
+  <h2 class="title">镜像构建加速利器：JIB</h2>
+  <p class="sub">Aug 27, 2020</p>
+  <article class="content">
+    <blockquote>
+<p>谷歌开源，必属精品。Github地址：<a href="https://github.com/GoogleContainerTools/jib" target="_blank" rel="noopener">https://github.com/GoogleContainerTools/jib</a></p>
+</blockquote>
+<p>总结一下：</p>
+<ul>
+<li>胖Jar拆分成主类Main.class和其他依赖项。充分利用镜像构建layers层可以复用的优势</li>
+<li>构建幂等，代码不动，永远打出的是同一个镜像</li>
+<li>不用写Dockerfile。本地不需要启动docker服务（依赖OCI镜像标准，可不依赖Docker构建出镜像）</li>
+</ul>
+<p>应用：Abc 镜像仓库地址：image.com</p>
+<blockquote>
+<p>原构建过程</p>
+</blockquote>
+<pre><code class="shell">gradle build -x test
+docker build -t image.com/library/Abc:v1.0 .
+docker push image.com/library/Abc:v1.0</code></pre>
+<ul>
+<li>依赖docker服务</li>
+<li>Send context to Docker daemon (耗时操作，可通过.dockerignore忽略指定目录，但规则不好维护)</li>
+<li>Push to Remote Container Registry (胖Jar如果有200M，就要传输200M)</li>
+</ul>
+<blockquote>
+<p>现构建流程</p>
+</blockquote>
+<pre><code class="shell">gradle jib --image=image.com/library/Abc:v1.0</code></pre>
+<p>实际测试下来，190M的Jar包，新旧构建方式竟然可以相差1分钟！（实际跟网络传输速度有关）</p>
+<p>赶紧跟老大汇报去，发布加速可以继续优化起来～～</p>
+
+  </article>
+  <footer class="f-cf">
     
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1012.png" alt=""/>
-        </div>
     
-    <div class="ctnWrap">
-        <a href="/2020/07/29/kubectl-command/" class="title">Kubectl实用命令（持续更新）</a>
-        
-        <section class="desc">
-  搜集笔者工作中用到的Kubectl实用命令
+      <a href="/2020/08/25/cadvisor/" class="link f-fr">与Cadvisor相爱相杀的日子⟶</a>
+    
+  </footer>
 </section>
-        <span class="sub">Jul 29, 2020</span> <a class="sub" href="tags/kubernetes" >｜kubernetes</a>
-    </div>
 
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1009.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/07/25/lru-java/" class="title">LRU算法代码演示</a>
-        
-        <section class="desc">
-  最近最少使用缓存算法的Java代码实现，注释丰富，方便理解
-</section>
-        <span class="sub">Jul 25, 2020</span> <a class="sub" href="tags/algorithm" >｜algorithm</a>
-    </div>
-
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1008.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/07/22/container-monitor-gitbook/" class="title">容器监控 &amp; Prometheus 优秀GitBook推荐</a>
-        
-        <section class="desc">
-  推荐两位作者编写的GitBook
-</section>
-        <span class="sub">Jul 22, 2020</span> <a class="sub" href="tags/prometheus" >｜prometheus</a>
-    </div>
-
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1006.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/07/17/sort-algorithm/" class="title">两种排序算法代码演示</a>
-        
-        <section class="desc">
-  冒泡排序和快速排序
-</section>
-        <span class="sub">Jul 17, 2020</span> <a class="sub" href="tags/algorithm" >｜algorithm</a>
-    </div>
-
-</div>
-
-
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/">下一页</a>
-  </nav>
-
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'df0939e6bbcc32f66c96',
+        clientSecret: '698521e751c5804f9a00471bf21c7ab0c3d1cf8e',
+        id: location.pathname,
+        repo: 'w0nwig.github.io',
+        owner: 'w0nwig',
+        admin: ['w0nwig']
+    })
+    gitalk.render('gitalk-container')
+</script>
 </div>
     <footer id="footer" class="f-cf">
   rongjun0821@gmail.com
