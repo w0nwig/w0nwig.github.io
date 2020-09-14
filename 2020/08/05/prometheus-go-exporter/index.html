@@ -104,44 +104,44 @@
     rootCAFile = &quot;/var/run/secrets/kubernetes.io/serviceaccount/ca.crt&quot;
 )
 host, port := os.Getenv(&quot;KUBERNETES_SERVICE_HOST&quot;), os.Getenv(&quot;KUBERNETES_SERVICE_PORT&quot;)
-if len(host) == 0 || len(port) == 0 {
+if len(host) == 0 || len(port) == 0 &#123;
     return nil, ErrNotInCluster
-}
+&#125;
 
 token, err := ioutil.ReadFile(tokenFile)
-if err != nil {
+if err != nil &#123;
     return nil, err
-}
+&#125;
 
-tlsClientConfig := TLSClientConfig{}
+tlsClientConfig := TLSClientConfig&#123;&#125;
 
-if _, err := certutil.NewPool(rootCAFile); err != nil {
+if _, err := certutil.NewPool(rootCAFile); err != nil &#123;
     klog.Errorf(&quot;Expected to load root CA config from %s, but got err: %v&quot;, rootCAFile, err)
-} else {
+&#125; else &#123;
     tlsClientConfig.CAFile = rootCAFile
-}</code></pre>
+&#125;</code></pre>
 <p>如果是通过idea开发Go语言程序，可在Environment中添加<code>KUBERNETES_SERVICE_HOST</code>和<code>KUBERNETES_SERVICE_PORT</code>两项环境变量</p>
 <p>然后在本地新建/var/run/secrets/kubernetes.io/serviceaccount/token和/var/run/secrets/kubernetes.io/serviceaccount/ca.crt文件，文件内容可拷贝集群中某个Pod用到的文件，<br>token文件确定了对应的RBAC权限</p>
 <p>这样就可以在本地进行测试，不需要打出镜像，再创建部署，发到集群中才能测试</p>
 <h3 id="踩到的坑"><a href="#踩到的坑" class="headerlink" title="踩到的坑"></a>踩到的坑</h3><p>官方Prometheus Go client中通过Collect方法搜集指标，用到channel，自定义collector需要实现Collect方法，如下：</p>
-<pre><code class="go">func (c *Metrics) Collect(ch chan&lt;- prometheus.Metric) {
+<pre><code class="go">func (c *Metrics) Collect(ch chan&lt;- prometheus.Metric) &#123;
     c.mutex.Lock() // 加锁
     defer c.mutex.Unlock()
 
-    pods, err := c.clientset.CoreV1().Pods(&quot;&quot;).List(context.TODO(), metav1.ListOptions{})
-    if err != nil {
+    pods, err := c.clientset.CoreV1().Pods(&quot;&quot;).List(context.TODO(), metav1.ListOptions&#123;&#125;)
+    if err != nil &#123;
         panic(err.Error())
-    }
+    &#125;
     items := pods.Items
     var wg sync.WaitGroup
-    for _, item := range items {
+    for _, item := range items &#123;
         wg.Add(1)
         tmp := item
         go healthCheck(&amp;tmp, c, ch, &amp;wg)
-    }
+    &#125;
 
     wg.Wait()
-}</code></pre>
+&#125;</code></pre>
 <p>其中healthCheck方法中对pod进行健康检查，返回健康检查耗时</p>
 <blockquote>
 <p>坑1</p>

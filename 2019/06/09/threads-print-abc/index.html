@@ -95,7 +95,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author wrj
  * @date 2019/6/9
  */
-public class ABC implements Runnable {
+public class ABC implements Runnable &#123;
 
     private static volatile int FLAG = 0;
     private final static Object object = new Object();
@@ -103,9 +103,9 @@ public class ABC implements Runnable {
     private final static Condition condition = lock.newCondition();
     private final int selfFlag;
 
-    public ABC(int selfFlag) {
+    public ABC(int selfFlag) &#123;
         this.selfFlag = selfFlag;
-    }
+    &#125;
 
     /**
      * When an object implementing interface &lt;code&gt;Runnable&lt;/code&gt; is used
@@ -119,55 +119,55 @@ public class ABC implements Runnable {
      * @see Thread#run()
      */
     @Override
-    public void run() {
+    public void run() &#123;
         lockCondition();
-    }
+    &#125;
 
-    private void lockCondition() {
+    private void lockCondition() &#123;
         lock.lock();
-        try {
-            while (true) {
-                if (FLAG % 3 == selfFlag) {
+        try &#123;
+            while (true) &#123;
+                if (FLAG % 3 == selfFlag) &#123;
                     System.out.print((char) (&#39;A&#39; + selfFlag));
                     FLAG++;
                     condition.signalAll();
-                } else {
-                    try {
+                &#125; else &#123;
+                    try &#123;
                         condition.await();
-                    } catch (InterruptedException e) {
+                    &#125; catch (InterruptedException e) &#123;
                         e.printStackTrace();
-                    }
-                }
-            }
-        } finally {
+                    &#125;
+                &#125;
+            &#125;
+        &#125; finally &#123;
             lock.unlock();
-        }
-    }
+        &#125;
+    &#125;
 
-    private void waitNotify() {
-        synchronized (object) {
-            while (true) {
-                if (FLAG % 3 == selfFlag) {
+    private void waitNotify() &#123;
+        synchronized (object) &#123;
+            while (true) &#123;
+                if (FLAG % 3 == selfFlag) &#123;
                     System.out.print((char) (&#39;A&#39; + selfFlag));
                     FLAG++;
                     object.notifyAll();
-                } else {
-                    try {
+                &#125; else &#123;
+                    try &#123;
                         object.wait();
-                    } catch (InterruptedException e) {
+                    &#125; catch (InterruptedException e) &#123;
                         e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
+                    &#125;
+                &#125;
+            &#125;
+        &#125;
+    &#125;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) &#123;
         new Thread(new ABC(0)).start();
         new Thread(new ABC(1)).start();
         new Thread(new ABC(2)).start();
-    }
-}
+    &#125;
+&#125;
 </code></pre>
 
   </article>

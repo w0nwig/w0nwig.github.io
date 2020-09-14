@@ -81,61 +81,61 @@
   <p class="sub">Jul 8, 2019</p>
   <article class="content">
     <p>先来看一段代码</p>
-<pre><code class="java">public class ThreadMain {
+<pre><code class="java">public class ThreadMain &#123;
 
-    private static class SimpleThreadFactory implements ThreadFactory {
+    private static class SimpleThreadFactory implements ThreadFactory &#123;
         private static final AtomicInteger threadNumber = new AtomicInteger(1);
         private final String namePrefix;
 
-        public SimpleThreadFactory() {
+        public SimpleThreadFactory() &#123;
             namePrefix = &quot;simple-pool-thread-&quot;;
-        }
+        &#125;
 
-        public Thread newThread(Runnable r) {
+        public Thread newThread(Runnable r) &#123;
             int i = threadNumber.getAndIncrement();
             return new Thread(namePrefix + i);
-        }
-    }
+        &#125;
+    &#125;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException &#123;
         CountDownLatch countDownLatch = new CountDownLatch(1);
         ExecutorService executorService = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS,
                 new ArrayBlockingQueue&lt;&gt;(10), new SimpleThreadFactory(), new ThreadPoolExecutor.CallerRunsPolicy());
 
-        executorService.submit(() -&gt; {
-            try {
+        executorService.submit(() -&gt; &#123;
+            try &#123;
                 System.out.println(&quot;worker done&quot;);
-            } catch (Throwable e) {
+            &#125; catch (Throwable e) &#123;
                 e.printStackTrace();
-            } finally {
+            &#125; finally &#123;
                 countDownLatch.countDown();
-            }
-        });
+            &#125;
+        &#125;);
 
         countDownLatch.await();
 
         System.out.println(&quot;main done&quot;);
 
         executorService.shutdown();
-    }
-}</code></pre>
+    &#125;
+&#125;</code></pre>
 <p>很简单的一段代码，main方法中用<code>ThreadPoolExecutor</code>定义了一个线程池，用CountDownLatch做同步，主线程在工作线程打印出<code>worker done</code>后，打印<code>main done</code>并退出。实际运行，发现控制台没有任何输出。问题出在哪呢？</p>
 <p>经过分析可知，工作线程没有执行任务，<code>countDownLatch</code>没有计数，于是主线程阻塞了，可为什么任务不执行呢？</p>
 <p>直接揭晓结果，看这段代码：</p>
-<pre><code>public Thread newThread(Runnable r) {
+<pre><code>public Thread newThread(Runnable r) &#123;
     int i = threadNumber.getAndIncrement();
     return new Thread(namePrefix + i);
-}</code></pre><p><code>SimpleThreadFactory</code>类实现<code>ThreadFactory</code>，用于自定义自己的线程工厂，需要实现<code>newThread</code>方法，其他有个Runnable类型的参数r，上面这段代码没有用到这个参数，被初始化的线程中待执行的任务为空，看下面这段Thread类中的代码：</p>
+&#125;</code></pre><p><code>SimpleThreadFactory</code>类实现<code>ThreadFactory</code>，用于自定义自己的线程工厂，需要实现<code>newThread</code>方法，其他有个Runnable类型的参数r，上面这段代码没有用到这个参数，被初始化的线程中待执行的任务为空，看下面这段Thread类中的代码：</p>
 <pre><code>@Override
-public void run() {
-    if (target != null) {
+public void run() &#123;
+    if (target != null) &#123;
         target.run();
-    }
-}</code></pre><p>target对应上面<code>newThread</code>方法中的参数r，那就明白了：线程池中初始化了一个线程，但这个线程没有任务，那任务自然不能被执行，打印任务不能完成，修改后的代码如下：</p>
-<pre><code class="java">public Thread newThread(Runnable r) {
+    &#125;
+&#125;</code></pre><p>target对应上面<code>newThread</code>方法中的参数r，那就明白了：线程池中初始化了一个线程，但这个线程没有任务，那任务自然不能被执行，打印任务不能完成，修改后的代码如下：</p>
+<pre><code class="java">public Thread newThread(Runnable r) &#123;
     int i = threadNumber.getAndIncrement();
     return new Thread(r, namePrefix + i);
-}</code></pre>
+&#125;</code></pre>
 <p>之后程序可以正常运行退出</p>
 
   </article>

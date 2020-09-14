@@ -87,14 +87,14 @@
  * @author wrj
  * @date 2020/4/29
  */
-public class Node {
+public class Node &#123;
     public int key, val;
     public Node next, prev;
-    public Node(int k, int v) {
+    public Node(int k, int v) &#123;
         this.key = k;
         this.val = v;
-    }
-}</code></pre>
+    &#125;
+&#125;</code></pre>
 <p>定义双向链表，存放Node节点</p>
 <pre><code class="java">package lru;
 
@@ -104,63 +104,63 @@ import java.util.LinkedList;
  * @author wrj
  * @date 2020/4/29
  */
-public class DoubleList {
+public class DoubleList &#123;
 
     private Node first;
     private Node last;
     private int size = 0;
 
     // 在链表头部添加节点 x，时间 O(1)
-    public void addFirst(Node x) {
+    public void addFirst(Node x) &#123;
         final Node f = first;
         x.next = f;
         first = x;
 
         // 如果是第一个节点
-        if (f == null) {
+        if (f == null) &#123;
             last = x;
-        } else {
+        &#125; else &#123;
             // 不是第一个节点
             f.prev = x;
-        }
+        &#125;
         size++;
-    }
+    &#125;
 
     // 删除链表中的 x 节点(x 一定存在)
     // 由于是双链表且给的是目标 Node 节点，时间 O(1)
     // 因为是LRU，node不会出现重复，直接操作前后节点指针就可以了
-    public void remove(Node node) {
-        for (Node x = first; x != null; x = x.next) {
-            if (node.key == x.key) {
+    public void remove(Node node) &#123;
+        for (Node x = first; x != null; x = x.next) &#123;
+            if (node.key == x.key) &#123;
                 final Node next = x.next;
                 final Node prev = x.prev;
 
                 // 删除的是头节点
-                if (prev == null) {
+                if (prev == null) &#123;
                     first = next;
-                } else {
+                &#125; else &#123;
                     // 重新连接前节点的下一点为自己的下一节点
                     prev.next = next;
                     x.prev = null;
-                }
+                &#125;
 
                 // 删除的是尾节点
-                if (next == null) {
+                if (next == null) &#123;
                     last = prev;
-                } else {
+                &#125; else &#123;
                     // 重新连接后节点的前一点为自己的前一节点
                     next.prev = prev;
                     x.next = null;
-                }
+                &#125;
 
                 size--;
                 return;
-            }
-        }
-    }
+            &#125;
+        &#125;
+    &#125;
 
     // 删除链表中最后一个节点，并返回该节点，时间 O(1)
-    public Node removeLast() {
+    public Node removeLast() &#123;
         final Node _last = last;
         final Node prev = last.prev;
         // 帮助触发gc
@@ -169,19 +169,19 @@ public class DoubleList {
         // 只有一个节点，则将first也置为null
         if (prev == null)
             first = null;
-        else {
+        else &#123;
             prev.next = null;
-        }
+        &#125;
 
         size--;
         return _last;
-    }
+    &#125;
 
     // 返回链表⻓度，时间 O(1)
-    public int size() {
+    public int size() &#123;
         return size;
-    }
-}</code></pre>
+    &#125;
+&#125;</code></pre>
 <p>LRU演示代码</p>
 <pre><code class="java">package lru;
 
@@ -195,45 +195,45 @@ import java.util.Map;
  * 查询和插入操作必须是O(1)，需要用到map这种结构
  * 需要保证顺序，空间不够时需要删除节点，需要O(1)内完成，需要用到链表这种结构，JDK：LinkedList基本满足这种数据结构
  */
-public class LRUCache {
+public class LRUCache &#123;
     private Map&lt;Integer, Node&gt; map;
     private DoubleList cache;
     // 最大容量
     private int cap;
 
-    public LRUCache(int capacity) {
+    public LRUCache(int capacity) &#123;
         this.cap = capacity;
         map = new HashMap&lt;&gt;();
         cache = new DoubleList();
-    }
+    &#125;
 
-    public int get(int key) {
-        /*if (key 不存在) {
-            return -1; } else {
+    public int get(int key) &#123;
+        /*if (key 不存在) &#123;
+            return -1; &#125; else &#123;
             将数据 (key, val) 提到开头;
-            return val; }*/
+            return val; &#125;*/
 
-        if (!map.containsKey(key)) {
+        if (!map.containsKey(key)) &#123;
             return -1;
-        }
+        &#125;
 
         int val = map.get(key).val;
         // 利用 put 方法把该数据提前
         put(key, val);
         return val;
-    }
+    &#125;
 
-    public void put(int key, int val) {
-        /*if (key 已存在) {
+    public void put(int key, int val) &#123;
+        /*if (key 已存在) &#123;
             把旧的数据删除;
-            将新节点 x 插入到开头; } else {
-            if (cache 已满) {
+            将新节点 x 插入到开头; &#125; else &#123;
+            if (cache 已满) &#123;
                 删除链表的最后一个数据腾位置;
-                删除 map 中映射到该数据的键; }
+                删除 map 中映射到该数据的键; &#125;
             将新节点 x 插入到开头;
-            map 中新建 key 对新节点 x 的映射; }*/
+            map 中新建 key 对新节点 x 的映射; &#125;*/
         Node x = new Node(key, val);
-        if (map.containsKey(key)) {
+        if (map.containsKey(key)) &#123;
             // 删除旧节点
             cache.remove(x);
             // 将新节点提到最前
@@ -241,47 +241,47 @@ public class LRUCache {
             // 添加新节点到map中
             map.put(key, x);
             return;
-        }
+        &#125;
 
         // 不是重复节点，则插入到头，但要判断容量
-        if (cap == cache.size()) {
+        if (cap == cache.size()) &#123;
             // 删除链表最后一个数据
             Node last = cache.removeLast();
             map.remove(last.key);
-        }
+        &#125;
 
         // 直接添加到头部
         cache.addFirst(x);
         // 保存map的映射
         map.put(key, x);
-    }
+    &#125;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) &#123;
         LRUCache cache = new LRUCache(2);
         // 初始化缓存
-        // 当前缓存结构【{1, 1}, {2, 2}】
+        // 当前缓存结构【&#123;1, 1&#125;, &#123;2, 2&#125;】
         cache.put(1, 1);
         cache.put(2, 2);
 
-        // 缓存{3, 3}，则将最近最少使用的删掉，删掉1
-        // 当前缓存结构【{3, 3}, {2, 2}】
+        // 缓存&#123;3, 3&#125;，则将最近最少使用的删掉，删掉1
+        // 当前缓存结构【&#123;3, 3&#125;, &#123;2, 2&#125;】
         cache.put(3, 3);
         // i应该等于-1，1作为尾节点需要被删除
         int i = cache.get(1);
         assert i == -1;
 
-        // 再次访问2，将{2, 2}提到开头
-        // 当前缓存结构【{2, 2}, {3, 3}】
+        // 再次访问2，将&#123;2, 2&#125;提到开头
+        // 当前缓存结构【&#123;2, 2&#125;, &#123;3, 3&#125;】
         cache.get(2);
 
-        // 缓存{4, 4}，将最近最少使用的删掉，删掉3
+        // 缓存&#123;4, 4&#125;，将最近最少使用的删掉，删掉3
         // i应该等于-1，1作为尾节点需要被删除
         cache.put(4, 4);
         int i1 = cache.get(3);
         assert i1 == -1;
-    }
+    &#125;
 
-}</code></pre>
+&#125;</code></pre>
 <p>源码查看地址：<a href="https://github.com/w0nwig/algorithm-practice/tree/master/src/main/java/lru" target="_blank" rel="noopener">LRU Cache</a></p>
 
   </article>

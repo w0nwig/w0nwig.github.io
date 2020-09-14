@@ -82,37 +82,37 @@
   <article class="content">
     <p>Talk is cheap, show me the code</p>
 <pre><code class="java">@Slf4j
-public final class ConcurrentUtils {
+public final class ConcurrentUtils &#123;
 
-    private ConcurrentUtils() {
-    }
+    private ConcurrentUtils() &#123;
+    &#125;
 
     /**
      * 在线程池中运行任务并阻塞直到所有线程都完成
      *
      * @param runnables
      */
-    public static void executeTasksBlocking(Executor executor, List&lt;Runnable&gt; runnables) throws InterruptedException {
+    public static void executeTasksBlocking(Executor executor, List&lt;Runnable&gt; runnables) throws InterruptedException &#123;
         final CountDownLatch latch = new CountDownLatch(runnables.size());
 
-        for (final Runnable r : runnables) {
-            executor.execute(() -&gt; {
-                try {
+        for (final Runnable r : runnables) &#123;
+            executor.execute(() -&gt; &#123;
+                try &#123;
                     r.run();
-                } catch (Throwable e) {
+                &#125; catch (Throwable e) &#123;
                     log.error(e.getMessage(), e);
-                } finally {
+                &#125; finally &#123;
                     latch.countDown();
-                }
-            });
-        }
+                &#125;
+            &#125;);
+        &#125;
 
-        try {
+        try &#123;
             latch.await();
-        } catch (InterruptedException e) {
+        &#125; catch (InterruptedException e) &#123;
             throw e;
-        }
-    }
+        &#125;
+    &#125;
 
     /**
      * 在线程池中运行任务并阻塞直到所有线程都完成,callables的顺序和返回值的顺序一致
@@ -120,40 +120,40 @@ public final class ConcurrentUtils {
      * @param callables
      * @return Callable的结果
      */
-    public static &lt;V&gt; List&lt;V&gt; submitTasksBlocking(Executor executor, List&lt;Callable&lt;V&gt;&gt; callables) throws InterruptedException {
+    public static &lt;V&gt; List&lt;V&gt; submitTasksBlocking(Executor executor, List&lt;Callable&lt;V&gt;&gt; callables) throws InterruptedException &#123;
         final CountDownLatch latch = new CountDownLatch(callables.size());
         final ConcurrentMap&lt;Integer, V&gt; seq2valueMap = new ConcurrentHashMap&lt;&gt;();
 
         int i = 0;
-        for (final Callable&lt;V&gt; r : callables) {
+        for (final Callable&lt;V&gt; r : callables) &#123;
             final int j = i;
             i++;
-            executor.execute(() -&gt; {
-                try {
+            executor.execute(() -&gt; &#123;
+                try &#123;
                     V v = r.call();
                     seq2valueMap.put(j, v);
-                } catch (Throwable e) {
+                &#125; catch (Throwable e) &#123;
                     log.error(e.getMessage(), e);
-                } finally {
+                &#125; finally &#123;
                     latch.countDown();
-                }
-            });
-        }
+                &#125;
+            &#125;);
+        &#125;
 
-        try {
+        try &#123;
             latch.await();
-        } catch (InterruptedException e) {
+        &#125; catch (InterruptedException e) &#123;
             throw e;
-        }
+        &#125;
         List&lt;V&gt; ret = new ArrayList&lt;&gt;(i);
-        for (int k = 0; k &lt; i; k++) {
+        for (int k = 0; k &lt; i; k++) &#123;
             ret.add(seq2valueMap.get(k));
-        }
+        &#125;
 
         return ret;
-    }
+    &#125;
 
-}</code></pre>
+&#125;</code></pre>
 <p>CountDownLatch 基于 <strong>AQS(AbstractQueuedSynchronizer)</strong> 实现</p>
 <p>基本原理是AQS内部维护一个state字段，当state==0时，表示可以竞争获得锁，当初始化CountDownLatch时指定了n，可理解为n个线程获得了n把锁，主线程调用await()方法被阻塞住，任务线程每执行一次countDown()，state就减少1，表示释放掉了一把锁，直到state变为0，主线程可以竞争到锁，脱离阻塞状态继续往下执行</p>
 <p>AQS是Java实现多线程同步的精髓所在，值得深入挖掘，博主将另外写一篇博客详细介绍AQS的实现原理</p>

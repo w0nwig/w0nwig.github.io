@@ -85,20 +85,20 @@
 <blockquote>
 <p>依赖项【笔者基于Gradle，Maven类似】：</p>
 </blockquote>
-<pre><code>buildscript {
+<pre><code>buildscript &#123;
     ext[&quot;springBootVersion&quot;] = &quot;2.2.7.RELEASE&quot;
-}
+&#125;
 // 依赖版本管理
-dependencyManagement {
-        dependencies {
-            imports {
-                mavenBom &quot;org.springframework.boot:spring-boot-dependencies:${springBootVersion}&quot;
-            }
+dependencyManagement &#123;
+        dependencies &#123;
+            imports &#123;
+                mavenBom &quot;org.springframework.boot:spring-boot-dependencies:$&#123;springBootVersion&#125;&quot;
+            &#125;
 
             dependency &quot;io.prometheus:simpleclient:0.8.1&quot;
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 
 // 添加依赖
 compile &quot;org.springframework.boot:spring-boot-starter-actuator&quot;
@@ -107,47 +107,47 @@ compile &#39;io.prometheus:simpleclient&#39;
 <p>自定义类一：</p>
 </blockquote>
 <pre><code>@WebEndpoint(id = &quot;prometheus&quot;)
-public class MyPrometheusEndpoint {
+public class MyPrometheusEndpoint &#123;
     private final CollectorRegistry collectorRegistry;
 
-    public MyPrometheusEndpoint(CollectorRegistry collectorRegistry) {
+    public MyPrometheusEndpoint(CollectorRegistry collectorRegistry) &#123;
         this.collectorRegistry = collectorRegistry;
-    }
+    &#125;
 
     @ReadOperation(produces = TextFormat.CONTENT_TYPE_004)
-    public String scrape() {
-        try {
+    public String scrape() &#123;
+        try &#123;
             Writer writer = new StringWriter();
             TextFormat.write004(writer, this.collectorRegistry.metricFamilySamples());
             return writer.toString();
-        } catch (IOException ex) {
+        &#125; catch (IOException ex) &#123;
             // This actually never happens since StringWriter::write() doesn&#39;t throw any
             // IOException
             throw new RuntimeException(&quot;Writing metrics failed&quot;, ex);
-        }
-    }
-}</code></pre><blockquote>
+        &#125;
+    &#125;
+&#125;</code></pre><blockquote>
 <p>自定义类二：</p>
 </blockquote>
 <pre><code>@Configuration
-public class MyPrometheusMetricsExportAutoConfiguration {
+public class MyPrometheusMetricsExportAutoConfiguration &#123;
 
     public static final CollectorRegistry collectorRegistry = new CollectorRegistry();
 
     @Bean
-    public MyPrometheusEndpoint myPrometheusEndpoint() {
+    public MyPrometheusEndpoint myPrometheusEndpoint() &#123;
         return new MyPrometheusEndpoint(collectorRegistry);
-    }
+    &#125;
 
-}</code></pre><blockquote>
+&#125;</code></pre><blockquote>
 <p>自定义类三【指标搜集类，自定义Collector】：</p>
 </blockquote>
 <pre><code>@Component
 @Slf4j
-public class MonitorCheckExporter extends Collector {
+public class MonitorCheckExporter extends Collector &#123;
 
     @Override
-    public List&lt;MetricFamilySamples&gt; collect() {
+    public List&lt;MetricFamilySamples&gt; collect() &#123;
         List&lt;MetricFamilySamples&gt; mfs = new ArrayList&lt;&gt;();
 
         /*
@@ -155,26 +155,26 @@ public class MonitorCheckExporter extends Collector {
         * */
 
         return mfs;
-    }
+    &#125;
 
-}</code></pre><blockquote>
+&#125;</code></pre><blockquote>
 <p>SpringBoot启动类：</p>
 </blockquote>
-<pre><code>public class Application implements CommandLineRunner {
+<pre><code>public class Application implements CommandLineRunner &#123;
 
     @Resource
     private MonitorCheckExporter monitorCheckExporter;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) &#123;
         SpringApplication sa = new SpringApplication(Application.class);
         sa.run(args);
-    }
+    &#125;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) throws Exception &#123;
         monitorCheckExporter.register(MyPrometheusMetricsExportAutoConfiguration.collectorRegistry);
-    }
-}</code></pre><p>至此，可实现SpringBoot2.0暴露/actuator/prometheus接口供prometheus拉取自定义指标的功能</p>
+    &#125;
+&#125;</code></pre><p>至此，可实现SpringBoot2.0暴露/actuator/prometheus接口供prometheus拉取自定义指标的功能</p>
 
   </article>
   <footer class="f-cf">
