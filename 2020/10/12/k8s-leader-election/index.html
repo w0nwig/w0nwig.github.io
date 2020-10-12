@@ -3,17 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>w0nwig</title>
+  <title>K8S系统组件高可用选主逻辑 | w0nwig</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="personal blog based on hexo">
-<meta property="og:type" content="website">
-<meta property="og:title" content="w0nwig">
-<meta property="og:url" content="http://yoursite.com/page/3/index.html">
+  <meta name="description" content="kube-scheduler和kube-controller-manager两个组件的高可用选主实现原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="K8S系统组件高可用选主逻辑">
+<meta property="og:url" content="http://yoursite.com/2020/10/12/k8s-leader-election/index.html">
 <meta property="og:site_name" content="w0nwig">
-<meta property="og:description" content="personal blog based on hexo">
+<meta property="og:description" content="kube-scheduler和kube-controller-manager两个组件的高可用选主实现原理">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1023.png">
+<meta property="article:published_time" content="2020-10-12T08:29:45.893Z">
+<meta property="article:modified_time" content="2020-10-12T08:46:31.754Z">
 <meta property="article:author" content="w0nwig">
+<meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1023.png">
   
     <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
@@ -71,97 +76,51 @@
     </div>
   </div>
 </nav>
-    <div id="main">
-  <div class="project-card">
+    <div id="main"><section class="article">
+  <h2 class="title">K8S系统组件高可用选主逻辑</h2>
+  <p class="sub">Oct 12, 2020</p>
+  <article class="content">
+    <p>我们知道，在K8S的高可用实现中，kube-apiserver是通过启动多副本实例，前面挂负载均衡将请求分发到后端的实例来实现高可用，即多个实例同时提供服务，而kube-scheduler和kube-controller-manager是通过<strong>主备</strong>的方式实现高可用</p>
+<p>先来看一个命令：</p>
+<pre><code class="shell">MacBook-Pro-WRJ:~ wrj$ kubectl get endpoints  kube-scheduler -n kube-system -o yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  annotations:
+    control-plane.alpha.kubernetes.io/leader: &#39;{&quot;holderIdentity&quot;:&quot;iZbp1ip0k218fyn4474oapZ_b0ad5354-cbcd-11ea-9a2d-00163e09b061&quot;,&quot;leaseDurationSeconds&quot;:15,&quot;acquireTime&quot;:&quot;2020-07-22T03:46:32Z&quot;,&quot;renewTime&quot;:&quot;2020-10-12T08:32:11Z&quot;,&quot;leaderTransitions&quot;:13}&#39;
+  creationTimestamp: &quot;2019-07-08T03:22:07Z&quot;
+  name: kube-scheduler
+  namespace: kube-system
+  resourceVersion: &quot;163436659&quot;
+  selfLink: /api/v1/namespaces/kube-system/endpoints/kube-scheduler
+  uid: 90e7dad1-a12f-11e9-b020-00163e121eee</code></pre>
+<p>分布式系统中，一般需要借助外部系统进行选主，如：redis、zookeeper、etcd等， <strong>k8s的存储使用了etcd，但并没有使用etcd来实现选主，而是对 endpoint 这个资源做抢占，谁想抢到并将自己的信息写入 endpoint的 annotation 中，谁就获得了主</strong></p>
+<p>获得锁的状态信息存放在key为<code>control-plane.alpha.kubernetes.io/leader</code>的注解中，<code>holderIdentity:iZbp1ip0k218fyn4474oapZ_b0ad5354-cbcd-11ea-9a2d-00163e09b061</code>即为当前锁的获得者。可以看到租约是15s，获得锁成功的时刻是2020-07-22T03:46:32Z，<br>最新一次更新锁的时刻是：2020-10-12T08:32:11Z，然后锁发生交换的次数是13次</p>
+<p>参考自：<a href="http://www.xuyasong.com/?p=2037" target="_blank" rel="noopener">http://www.xuyasong.com/?p=2037</a></p>
+
+  </article>
+  <footer class="f-cf">
     
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1013.png" alt=""/>
-        </div>
     
-    <div class="ctnWrap">
-        <a href="/2020/07/29/k8s-base-component/" class="title">Kubernetes基础组件图</a>
-        
-        <section class="desc">
-  用一张图展示笔者所在公司线上k8s集群用到的基础服务
+      <a href="/2020/09/14/kubectl-neat/" class="link f-fr">如何成为一名更高效的&#34;YAML工程师&#34;⟶</a>
+    
+  </footer>
 </section>
-        <span class="sub">Jul 29, 2020</span> <a class="sub" href="tags/kubernetes" >｜kubernetes</a>
-    </div>
 
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1012.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/07/29/kubectl-command/" class="title">Kubectl实用命令（持续更新）</a>
-        
-        <section class="desc">
-  搜集笔者工作中用到的Kubectl实用命令
-</section>
-        <span class="sub">Jul 29, 2020</span> <a class="sub" href="tags/kubernetes" >｜kubernetes</a>
-    </div>
-
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1009.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/07/25/lru-java/" class="title">LRU算法代码演示</a>
-        
-        <section class="desc">
-  最近最少使用缓存算法的Java代码实现，注释丰富，方便理解
-</section>
-        <span class="sub">Jul 25, 2020</span> <a class="sub" href="tags/algorithm" >｜algorithm</a>
-    </div>
-
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1008.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/07/22/container-monitor-gitbook/" class="title">容器监控 &amp; Prometheus 优秀GitBook推荐</a>
-        
-        <section class="desc">
-  推荐两位作者编写的GitBook
-</section>
-        <span class="sub">Jul 22, 2020</span> <a class="sub" href="tags/prometheus" >｜prometheus</a>
-    </div>
-
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1006.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/07/17/sort-algorithm/" class="title">两种排序算法代码演示</a>
-        
-        <section class="desc">
-  冒泡排序和快速排序
-</section>
-        <span class="sub">Jul 17, 2020</span> <a class="sub" href="tags/algorithm" >｜algorithm</a>
-    </div>
-
-</div>
-
-
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/">下一页</a>
-  </nav>
-
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'df0939e6bbcc32f66c96',
+        clientSecret: '698521e751c5804f9a00471bf21c7ab0c3d1cf8e',
+        id: location.pathname,
+        repo: 'w0nwig.github.io',
+        owner: 'w0nwig',
+        admin: ['w0nwig']
+    })
+    gitalk.render('gitalk-container')
+</script>
 </div>
     <footer id="footer" class="f-cf">
   rongjun0821@gmail.com
