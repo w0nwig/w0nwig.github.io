@@ -97,7 +97,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author wrj
  * @date 2019/6/9
  */
-public class ABC implements Runnable &#123;
+public class ABC implements Runnable {
 
     private static volatile int FLAG = 0;
     private final static Object object = new Object();
@@ -105,9 +105,9 @@ public class ABC implements Runnable &#123;
     private final static Condition condition = lock.newCondition();
     private final int selfFlag;
 
-    public ABC(int selfFlag) &#123;
+    public ABC(int selfFlag) {
         this.selfFlag = selfFlag;
-    &#125;
+    }
 
     /**
      * When an object implementing interface &lt;code&gt;Runnable&lt;/code&gt; is used
@@ -121,64 +121,64 @@ public class ABC implements Runnable &#123;
      * @see Thread#run()
      */
     @Override
-    public void run() &#123;
+    public void run() {
         lockCondition();
-    &#125;
+    }
 
-    private void lockCondition() &#123;
+    private void lockCondition() {
         lock.lock();
-        try &#123;
-            while (true) &#123;
-                if (FLAG % 3 == selfFlag) &#123;
+        try {
+            while (true) {
+                if (FLAG % 3 == selfFlag) {
                     System.out.print((char) (&#39;A&#39; + selfFlag));
                     FLAG++;
                     condition.signalAll();
-                &#125; else &#123;
-                    try &#123;
+                } else {
+                    try {
                         condition.await();
-                    &#125; catch (InterruptedException e) &#123;
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
-                    &#125;
-                &#125;
-            &#125;
-        &#125; finally &#123;
+                    }
+                }
+            }
+        } finally {
             lock.unlock();
-        &#125;
-    &#125;
+        }
+    }
 
-    private void waitNotify() &#123;
-        synchronized (object) &#123;
-            while (true) &#123;
-                if (FLAG % 3 == selfFlag) &#123;
+    private void waitNotify() {
+        synchronized (object) {
+            while (true) {
+                if (FLAG % 3 == selfFlag) {
                     System.out.print((char) (&#39;A&#39; + selfFlag));
                     FLAG++;
                     object.notifyAll();
-                &#125; else &#123;
-                    try &#123;
+                } else {
+                    try {
                         object.wait();
-                    &#125; catch (InterruptedException e) &#123;
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
-                    &#125;
-                &#125;
-            &#125;
-        &#125;
-    &#125;
+                    }
+                }
+            }
+        }
+    }
 
-    public static void main(String[] args) &#123;
+    public static void main(String[] args) {
         new Thread(new ABC(0)).start();
         new Thread(new ABC(1)).start();
         new Thread(new ABC(2)).start();
-    &#125;
-&#125;
+    }
+}
 </code></pre>
 
   </article>
   <footer class="f-cf">
     
-      <a href="/2019/06/09/thread-lifecycle/" class="link f-fl">⟵Java线程生命周期图</a>
+      <a href="/2019/07/08/thread-pood-executor-trap/" class="link f-fl">⟵ThreadPoolExecutor使用一坑</a>
     
     
-      <a href="/2019/06/03/concurrent-utils/" class="link f-fr">CountDownLatch解决同步问题⟶</a>
+      <a href="/2019/06/09/thread-lifecycle/" class="link f-fr">Java线程生命周期图⟶</a>
     
   </footer>
 </section>

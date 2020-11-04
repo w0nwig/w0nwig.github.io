@@ -98,17 +98,17 @@
     // This happens in cases such as kubernetes where the containers doesn&#39;t have an IP address itself and we need to use the pod&#39;s address
     ipAddress := ctnr.NetworkSettings.IPAddress
     networkMode := string(ctnr.HostConfig.NetworkMode)
-    if ipAddress == &quot;&quot; &amp;&amp; strings.HasPrefix(networkMode, &quot;container:&quot;) &#123;
+    if ipAddress == &quot;&quot; &amp;&amp; strings.HasPrefix(networkMode, &quot;container:&quot;) {
         containerID := strings.TrimPrefix(networkMode, &quot;container:&quot;)
         c, err := client.ContainerInspect(context.Background(), containerID)
-        if err != nil &#123;
+        if err != nil {
             return nil, fmt.Errorf(&quot;failed to inspect container %q: %v&quot;, id, err)
-        &#125;
+        }
         ipAddress = c.NetworkSettings.IPAddress
-    &#125;</code></pre>
+    }</code></pre>
 <p>不知道是测试人员的疏漏还是啥缘故？虽然代码里写了kubernetes中部署的容器可以拿到IP，但实际无法拿到，也得到开发者肯定的答复<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/cadvisor-ip.png" alt="upload successful"></p>
 <p>最终，开发者建议我用Kube-state-metrics，然后通过Prometheus的Join语法关联查询得到IP，经过实践，可以满足需求，Join语法如下：</p>
-<pre><code class="shell">container_cpu_usage_rate&#123;container=&quot;prism&quot;, namespace=&quot;dev&quot;&#125;  * on(pod) group_left(pod_ip, instance) kube_pod_info&#123;namespace=&quot;dev&quot;&#125;</code></pre>
+<pre><code class="shell">container_cpu_usage_rate{container=&quot;prism&quot;, namespace=&quot;dev&quot;}  * on(pod) group_left(pod_ip, instance) kube_pod_info{namespace=&quot;dev&quot;}</code></pre>
 <p>Prometheus支持一对多、多对一、和多对多的指标关联，可查询官方文档确认使用方式。</p>
 
   </article>

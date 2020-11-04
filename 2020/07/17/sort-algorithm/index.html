@@ -88,67 +88,67 @@
  * @author wrj
  * @date 2020/7/16
  */
-public class Sort &#123;
+public class Sort {
 
     /**
      * 冒泡排序 平均时间复杂度O(n^2)
      * @param arr 数组
      */
-    public static void bubble(int[] arr) &#123;
+    public static void bubble(int[] arr) {
         // 方式一：最大的数移动到最右侧
-        for (int i = arr.length - 1; i &gt;= 1; i--) &#123;
-            for (int j = i - 1; j &gt;= 0; j--) &#123;
-                if (arr[j] &gt; arr[i]) &#123;
+        for (int i = arr.length - 1; i &gt;= 1; i--) {
+            for (int j = i - 1; j &gt;= 0; j--) {
+                if (arr[j] &gt; arr[i]) {
                     int tmp = arr[j];
                     arr[j] = arr[i];
                     arr[i] = tmp;
-                &#125;
-            &#125;
-        &#125;
+                }
+            }
+        }
 
         // 方式二：最小的数移动到最左侧
-        for (int i = 0; i &lt; arr.length - 1; i++) &#123;
-            for (int j = i + 1; j &lt; arr.length; j++) &#123;
-                if (arr[i] &gt; arr[j]) &#123;
+        for (int i = 0; i &lt; arr.length - 1; i++) {
+            for (int j = i + 1; j &lt; arr.length; j++) {
+                if (arr[i] &gt; arr[j]) {
                     int tmp = arr[j];
                     arr[j] = arr[i];
                     arr[i] = tmp;
-                &#125;
-            &#125;
-        &#125;
-    &#125;
+                }
+            }
+        }
+    }
 
     /**
      * 快速排序 平均时间复杂度O(log2N) 最坏时间复杂度O(n^2)
      * @param arr 数组
      */
-    public static void quickSort(int[] arr, int start, int end) &#123;
-        if (start &gt; end) &#123;
+    public static void quickSort(int[] arr, int start, int end) {
+        if (start &gt; end) {
 
             return;
-        &#125;
+        }
 
         int base = arr[start];
 
         int i = start, j = end;
 
-        while (i &lt; j) &#123;
+        while (i &lt; j) {
 
-            while (arr[j] &gt;= base &amp;&amp; i &lt; j) &#123;
+            while (arr[j] &gt;= base &amp;&amp; i &lt; j) {
                 j--;
-            &#125;
+            }
 
-            while (arr[i] &lt;= base &amp;&amp; i &lt; j) &#123;
+            while (arr[i] &lt;= base &amp;&amp; i &lt; j) {
                 i++;
-            &#125;
+            }
 
-            if (i &lt; j) &#123;
+            if (i &lt; j) {
                 int tmp = arr[i];
                 arr[i] = arr[j];
                 arr[j] = tmp;
-            &#125;
+            }
 
-        &#125;
+        }
 
         arr[start] = arr[i];
         arr[i] = base;
@@ -156,9 +156,9 @@ public class Sort &#123;
         quickSort(arr, start, i - 1);
         quickSort(arr, i + 1, end);
 
-    &#125;
+    }
 
-&#125;</code></pre>
+}</code></pre>
 <p>更多常见算法小演示见：<a href="https://github.com/w0nwig/algorithm-practice" target="_blank" rel="noopener">algorithm-practice</a></p>
 
   </article>
