@@ -17,12 +17,14 @@
   
     <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/10.1.2/styles/dracula.min.css">
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/10.1.2/styles/github.min.css">
   <script src="//cdn.bootcss.com/highlight.js/10.1.2/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlightjs-line-numbers.js@2.6.0/dist/highlightjs-line-numbers.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', (event) => {
       document.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightBlock(block);
+        hljs.highlightBlock(block);``
+        hljs.lineNumbersBlock(block);
       });
     });
   </script>
@@ -76,6 +78,36 @@
     <div class="project-card project-card-continuous">
   
     <div class="imgWrap">
+      <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1022.png" alt="" />
+    </div>
+  
+  <div class="ctnWrap">
+    <a href="/2020/11/02/kubectl-neat/" class="title">如何成为一名更高效的&#34;YAML工程师&#34;</a>
+    <section class="desc">
+  介绍一款实用工具，能过滤掉从k8s导出的YAML文件中由控制器添加的字段
+</section>
+    <p class="sub">Nov 2, 2020</p>
+  </div>
+</div>
+  
+    <div class="project-card project-card-continuous">
+  
+    <div class="imgWrap">
+      <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1019.png" alt="" />
+    </div>
+  
+  <div class="ctnWrap">
+    <a href="/2020/11/02/jib/" class="title">镜像构建加速利器：JIB</a>
+    <section class="desc">
+  持续集成好搭档，可有效加快Java应用镜像构建的速度
+</section>
+    <p class="sub">Nov 2, 2020</p>
+  </div>
+</div>
+  
+    <div class="project-card project-card-continuous">
+  
+    <div class="imgWrap">
       <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1023.png" alt="" />
     </div>
   
@@ -91,21 +123,6 @@
     <div class="project-card project-card-continuous">
   
     <div class="imgWrap">
-      <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1022.png" alt="" />
-    </div>
-  
-  <div class="ctnWrap">
-    <a href="/2020/09/14/kubectl-neat/" class="title">如何成为一名更高效的&#34;YAML工程师&#34;</a>
-    <section class="desc">
-  介绍一款实用工具，能过滤掉从k8s导出的YAML文件中由控制器添加的字段
-</section>
-    <p class="sub">Sep 14, 2020</p>
-  </div>
-</div>
-  
-    <div class="project-card project-card-continuous">
-  
-    <div class="imgWrap">
       <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1021.png" alt="" />
     </div>
   
@@ -115,21 +132,6 @@
   Kubernetes自带Pod水平伸缩功能介绍
 </section>
     <p class="sub">Sep 1, 2020</p>
-  </div>
-</div>
-  
-    <div class="project-card project-card-continuous">
-  
-    <div class="imgWrap">
-      <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1019.png" alt="" />
-    </div>
-  
-  <div class="ctnWrap">
-    <a href="/2020/08/27/jib/" class="title">镜像构建加速利器：JIB</a>
-    <section class="desc">
-  持续集成好搭档，可有效加快Java应用镜像构建的速度
-</section>
-    <p class="sub">Aug 27, 2020</p>
   </div>
 </div>
   

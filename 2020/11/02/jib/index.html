@@ -3,19 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>about | w0nwig</title>
+  <title>镜像构建加速利器：JIB | w0nwig</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="GitHub：@w0nwigE-Mail：rongjun0821@gmail.com">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://yoursite.com/about/index.html">
+  <meta name="description" content="持续集成好搭档，可有效加快Java应用镜像构建的速度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="镜像构建加速利器：JIB">
+<meta property="og:url" content="http://yoursite.com/2020/11/02/jib/index.html">
 <meta property="og:site_name" content="w0nwig">
-<meta property="og:description" content="GitHub：@w0nwigE-Mail：rongjun0821@gmail.com">
+<meta property="og:description" content="持续集成好搭档，可有效加快Java应用镜像构建的速度">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-06-03T15:13:03.000Z">
-<meta property="article:modified_time" content="2020-08-24T06:06:06.508Z">
+<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1019.png">
+<meta property="article:published_time" content="2020-11-02T12:12:55.100Z">
+<meta property="article:modified_time" content="2020-11-04T12:10:32.972Z">
 <meta property="article:author" content="w0nwig">
+<meta property="article:tag" content="CI">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1019.png">
   
     <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
@@ -68,7 +71,7 @@
             <a href="/tag" class="nav-menu ">标签</a>
           
         
-            <a href="/about" class="nav-menu z-active">关于</a>
+            <a href="/about" class="nav-menu ">关于</a>
           
         
       
@@ -76,11 +79,61 @@
   </div>
 </nav>
     <div id="main"><section class="article">
+  <h2 class="title">镜像构建加速利器：JIB</h2>
+  <p class="sub">Nov 2, 2020</p>
   <article class="content">
-    <p>GitHub：<a href="https://github.com/w0nwig" target="_blank" rel="noopener">@w0nwig</a><br>E-Mail：<a href="mailto:rongjun0821@gmail.com">rongjun0821@gmail.com</a></p>
+    <blockquote>
+<p>Github地址：<a href="https://github.com/GoogleContainerTools/jib" target="_blank" rel="noopener">https://github.com/GoogleContainerTools/jib</a></p>
+</blockquote>
+<p>总结一下：</p>
+<ul>
+<li>胖Jar拆分成主类Main.class和其他依赖项。充分利用镜像构建layers层可以复用的优势</li>
+<li>构建幂等，代码不动，永远打出的是同一个镜像</li>
+<li>不用写Dockerfile。本地不需要启动docker服务（依赖OCI镜像标准，可不依赖Docker构建出镜像）</li>
+</ul>
+<p>应用：Abc 镜像仓库地址：image.com</p>
+<blockquote>
+<p>原构建过程</p>
+</blockquote>
+<pre><code class="shell">gradle build -x test
+docker build -t image.com/library/Abc:v1.0 .
+docker push image.com/library/Abc:v1.0</code></pre>
+<ul>
+<li>依赖docker服务</li>
+<li>Send context to Docker daemon (耗时操作，可通过.dockerignore忽略指定目录，但规则不好维护)</li>
+<li>Push to Remote Container Registry (胖Jar如果有200M，就要传输200M)</li>
+</ul>
+<blockquote>
+<p>现构建流程</p>
+</blockquote>
+<pre><code>gradle jib --image=image.com/library/Abc:v1.0</code></pre><p>实际测试下来，190M的Jar包，新旧构建方式竟然可以相差1分钟！</p>
 
   </article>
-</section></div>
+  <footer class="f-cf">
+    
+      <a href="/2020/11/02/kubectl-neat/" class="link f-fl">⟵如何成为一名更高效的&#34;YAML工程师&#34;</a>
+    
+    
+      <a href="/2020/10/12/k8s-leader-election/" class="link f-fr">K8S系统组件高可用选主逻辑⟶</a>
+    
+  </footer>
+</section>
+
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'df0939e6bbcc32f66c96',
+        clientSecret: '698521e751c5804f9a00471bf21c7ab0c3d1cf8e',
+        id: location.pathname,
+        repo: 'w0nwig.github.io',
+        owner: 'w0nwig',
+        admin: ['w0nwig']
+    })
+    gitalk.render('gitalk-container')
+</script>
+</div>
     <footer id="footer" class="f-cf">
   rongjun0821@gmail.com
   
