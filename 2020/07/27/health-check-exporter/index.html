@@ -14,7 +14,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1010.png">
 <meta property="article:published_time" content="2020-07-27T12:14:07.127Z">
-<meta property="article:modified_time" content="2020-07-29T01:36:35.270Z">
+<meta property="article:modified_time" content="2020-11-05T07:15:34.381Z">
 <meta property="article:author" content="w0nwig">
 <meta property="article:tag" content="prometheus">
 <meta name="twitter:card" content="summary">
@@ -96,8 +96,7 @@
 <pre><code># HELP container_health_check_duration_millisecond The time(millisecond) taken to invoke the health check interface
 # TYPE container_health_check_duration_millisecond gauge
 container_health_check_duration_millisecond{container_name=&quot;&quot;,namespace=&quot;kube-system&quot;,pod_name=&quot;coredns-67fc48b9d7-dtb9w&quot;} 9.297547e+06</code></pre><p>通过kubectl工具快速部署体验</p>
-<pre><code class="shell">kubectl create deploy health-check-exporter --image=registry.cn-hangzhou.aliyuncs.com/clo/health-check-exporter:1.0</code></pre>
-<p>GitHub仓库地址：<a href="https://github.com/w0nwig/health-check-exporter" target="_blank" rel="noopener">health-check-exporter</a></p>
+<pre><code>kubectl create deploy health-check-exporter --image=registry.cn-hangzhou.aliyuncs.com/clo/health-check-exporter:1.0</code></pre><p>GitHub仓库地址：<a href="https://github.com/w0nwig/health-check-exporter" target="_blank" rel="noopener">health-check-exporter</a></p>
 <p>笔者将在另一篇博文中介绍开发过程中用到的技术点和踩过的坑</p>
 
   </article>

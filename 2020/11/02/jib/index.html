@@ -14,7 +14,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1019.png">
 <meta property="article:published_time" content="2020-11-02T12:12:55.100Z">
-<meta property="article:modified_time" content="2020-11-04T12:10:32.972Z">
+<meta property="article:modified_time" content="2020-11-05T07:15:34.369Z">
 <meta property="article:author" content="w0nwig">
 <meta property="article:tag" content="CI">
 <meta name="twitter:card" content="summary">
@@ -95,10 +95,9 @@
 <blockquote>
 <p>原构建过程</p>
 </blockquote>
-<pre><code class="shell">gradle build -x test
+<pre><code>gradle build -x test
 docker build -t image.com/library/Abc:v1.0 .
-docker push image.com/library/Abc:v1.0</code></pre>
-<ul>
+docker push image.com/library/Abc:v1.0</code></pre><ul>
 <li>依赖docker服务</li>
 <li>Send context to Docker daemon (耗时操作，可通过.dockerignore忽略指定目录，但规则不好维护)</li>
 <li>Push to Remote Container Registry (胖Jar如果有200M，就要传输200M)</li>

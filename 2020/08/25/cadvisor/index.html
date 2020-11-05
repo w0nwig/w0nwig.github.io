@@ -14,7 +14,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1018.png">
 <meta property="article:published_time" content="2020-08-25T08:55:32.243Z">
-<meta property="article:modified_time" content="2020-08-25T09:23:29.884Z">
+<meta property="article:modified_time" content="2020-11-05T07:15:34.333Z">
 <meta property="article:author" content="w0nwig">
 <meta property="article:tag" content="prometheus">
 <meta name="twitter:card" content="summary">
@@ -93,7 +93,7 @@
 <p>相关issue：<a href="https://github.com/google/cadvisor/issues/2591" target="_blank" rel="noopener">https://github.com/google/cadvisor/issues/2591</a></p>
 <p>此issue由笔者所提，笔者的公司用CAT做应用监控，开发们收到资源告警，只能得到对应的PodName，而CAT搜集的是应用的IP，无法联动查询</p>
 <p>原来，cadvisor确实缓存了容器的IP，通过<code>docker inspect</code>命令，但是在暴露Metric给Prometheus时未带上此IP，于是笔者修改了一下代码，<br>在本地通过docker启动镜像时，可以拿到IP，但当发到k8s中，发现无法得到PodIP，继续查阅源码，发现如下代码：</p>
-<pre><code class="Go">    // Obtain the IP address for the container.
+<pre><code class="go">    // Obtain the IP address for the container.
     // If the NetworkMode starts with &#39;container:&#39; then we need to use the IP address of the container specified.
     // This happens in cases such as kubernetes where the containers doesn&#39;t have an IP address itself and we need to use the pod&#39;s address
     ipAddress := ctnr.NetworkSettings.IPAddress
@@ -108,8 +108,7 @@
     }</code></pre>
 <p>不知道是测试人员的疏漏还是啥缘故？虽然代码里写了kubernetes中部署的容器可以拿到IP，但实际无法拿到，也得到开发者肯定的答复<br><img src="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/cadvisor-ip.png" alt="upload successful"></p>
 <p>最终，开发者建议我用Kube-state-metrics，然后通过Prometheus的Join语法关联查询得到IP，经过实践，可以满足需求，Join语法如下：</p>
-<pre><code class="shell">container_cpu_usage_rate{container=&quot;prism&quot;, namespace=&quot;dev&quot;}  * on(pod) group_left(pod_ip, instance) kube_pod_info{namespace=&quot;dev&quot;}</code></pre>
-<p>Prometheus支持一对多、多对一、和多对多的指标关联，可查询官方文档确认使用方式。</p>
+<pre><code>container_cpu_usage_rate{container=&quot;prism&quot;, namespace=&quot;dev&quot;}  * on(pod) group_left(pod_ip, instance) kube_pod_info{namespace=&quot;dev&quot;}</code></pre><p>Prometheus支持一对多、多对一、和多对多的指标关联，可查询官方文档确认使用方式。</p>
 
   </article>
   <footer class="f-cf">

@@ -14,7 +14,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1021.png">
 <meta property="article:published_time" content="2020-09-01T12:29:02.778Z">
-<meta property="article:modified_time" content="2020-09-01T15:18:59.473Z">
+<meta property="article:modified_time" content="2020-11-05T07:15:34.339Z">
 <meta property="article:author" content="w0nwig">
 <meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary">
@@ -83,12 +83,9 @@
   <p class="sub">Sep 1, 2020</p>
   <article class="content">
     <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>Pod 水平自动扩缩（Horizontal Pod Autoscaler） 可以基于 CPU 利用率自动扩缩 ReplicationController、Deployment 和 ReplicaSet 中的 Pod 数量。 除了 CPU 利用率，也可以基于其他应程序提供的自定义度量指标 来执行自动扩缩。 Pod 自动扩缩不适用于无法扩缩的对象，比如 DaemonSet。</p>
-<h3 id="检测周期设置"><a href="#检测周期设置" class="headerlink" title="检测周期设置"></a>检测周期设置</h3><pre><code class="shell">horizontal-pod-autoscaler-sync-period 默认15s</code></pre>
-<h3 id="核心算法"><a href="#核心算法" class="headerlink" title="核心算法"></a>核心算法</h3><pre><code>期望副本数 = ceil[当前副本数 * (当前指标 / 期望指标)]</code></pre><h3 id="容忍值"><a href="#容忍值" class="headerlink" title="容忍值"></a>容忍值</h3><p>上面公式（当前指标 / 期望指标）值在一定范围内不做扩缩容。可通过以下配置调整，如配置为0.1，说明值在[0.9 ~ 1.1]之间不做扩缩。</p>
-<pre><code class="shell">horizontal-pod-autoscaler-tolerance 默认0.1</code></pre>
-<h3 id="kubectl-对-Horizontal-Pod-Autoscaler-的支持"><a href="#kubectl-对-Horizontal-Pod-Autoscaler-的支持" class="headerlink" title="kubectl 对 Horizontal Pod Autoscaler 的支持"></a>kubectl 对 Horizontal Pod Autoscaler 的支持</h3><p>如下语句将会为名为foo的ReplicationSet创建一个HPA对象，目标CPU使用率为80%，副本数量配置为2到5之间</p>
-<pre><code class="shell">kubectl autoscale rs foo --min=2 --max=5 --cpu-percent=80 </code></pre>
-<h3 id="滚动升级时扩缩"><a href="#滚动升级时扩缩" class="headerlink" title="滚动升级时扩缩"></a>滚动升级时扩缩</h3><p>HPA支持绑定到Deployment，无法绑定到ReplicationSet，原因是HPA无法绑定到滚动更新时所新创建的副本控制器</p>
+<h3 id="检测周期设置"><a href="#检测周期设置" class="headerlink" title="检测周期设置"></a>检测周期设置</h3><pre><code>horizontal-pod-autoscaler-sync-period 默认15s</code></pre><h3 id="核心算法"><a href="#核心算法" class="headerlink" title="核心算法"></a>核心算法</h3><pre><code>期望副本数 = ceil[当前副本数 * (当前指标 / 期望指标)]</code></pre><h3 id="容忍值"><a href="#容忍值" class="headerlink" title="容忍值"></a>容忍值</h3><p>上面公式（当前指标 / 期望指标）值在一定范围内不做扩缩容。可通过以下配置调整，如配置为0.1，说明值在[0.9 ~ 1.1]之间不做扩缩。</p>
+<pre><code>horizontal-pod-autoscaler-tolerance 默认0.1</code></pre><h3 id="kubectl-对-Horizontal-Pod-Autoscaler-的支持"><a href="#kubectl-对-Horizontal-Pod-Autoscaler-的支持" class="headerlink" title="kubectl 对 Horizontal Pod Autoscaler 的支持"></a>kubectl 对 Horizontal Pod Autoscaler 的支持</h3><p>如下语句将会为名为foo的ReplicationSet创建一个HPA对象，目标CPU使用率为80%，副本数量配置为2到5之间</p>
+<pre><code>kubectl autoscale rs foo --min=2 --max=5 --cpu-percent=80 </code></pre><h3 id="滚动升级时扩缩"><a href="#滚动升级时扩缩" class="headerlink" title="滚动升级时扩缩"></a>滚动升级时扩缩</h3><p>HPA支持绑定到Deployment，无法绑定到ReplicationSet，原因是HPA无法绑定到滚动更新时所新创建的副本控制器</p>
 <h3 id="如何防止抖动"><a href="#如何防止抖动" class="headerlink" title="如何防止抖动"></a>如何防止抖动</h3><p><strong>horizontal-pod-autoscaler-downscale-stabilization</strong>: kube-controller-manager 的这个参数表示缩容冷却时间。 即自从上次缩容执行结束后，多久可以再次执行缩容，默认时间是 5 分钟(5m0s)。</p>
 <h3 id="多指标作为扩缩依据"><a href="#多指标作为扩缩依据" class="headerlink" title="多指标作为扩缩依据"></a>多指标作为扩缩依据</h3><p>Kubernetes 1.6 开始支持基于多个度量值进行扩缩。 你可以使用 <code>autoscaling/v2beta2</code> API 来为 Horizontal Pod Autoscaler 指定多个指标。 Horizontal Pod Autoscaler 会根据每个指标计算，并生成一个扩缩建议。<br><strong>幅度最大的扩缩建议会被采纳</strong></p>
 <h3 id="自定义指标支持以及开启条件"><a href="#自定义指标支持以及开启条件" class="headerlink" title="自定义指标支持以及开启条件"></a>自定义指标支持以及开启条件</h3><ul>
