@@ -3,17 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>w0nwig</title>
+  <title>Kubernetes集群认证相关内容解析 | w0nwig</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="personal blog based on hexo">
-<meta property="og:type" content="website">
-<meta property="og:title" content="w0nwig">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="分析k8s各个组件之间如何认证，客户端访问k8s时如何认证">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes集群认证相关内容解析">
+<meta property="og:url" content="http://yoursite.com/2020/11/18/k8s-authentication/index.html">
 <meta property="og:site_name" content="w0nwig">
-<meta property="og:description" content="personal blog based on hexo">
+<meta property="og:description" content="分析k8s各个组件之间如何认证，客户端访问k8s时如何认证">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1028.png">
+<meta property="article:published_time" content="2020-11-18T03:30:46.542Z">
+<meta property="article:modified_time" content="2020-11-18T03:37:10.191Z">
 <meta property="article:author" content="w0nwig">
+<meta property="article:tag" content="kubernetes">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1028.png">
   
     <link rel="icon" href="https://blog-1302533045.cos.ap-nanjing.myqcloud.com/images/icon.001.png">
   
@@ -57,7 +62,7 @@
     <div class="menu">
       
         
-            <a href="/" class="nav-menu z-active">主页</a>
+            <a href="/" class="nav-menu ">主页</a>
           
         
             <a href="/archives" class="nav-menu ">归档</a>
@@ -73,101 +78,34 @@
     </div>
   </div>
 </nav>
-    <div id="main">
-  <div class="project-card">
+    <div id="main"><section class="article">
+  <h2 class="title">Kubernetes集群认证相关内容解析</h2>
+  <p class="sub">Nov 18, 2020</p>
+  <article class="content">
     
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1011.png" alt=""/>
-        </div>
+  </article>
+  <footer class="f-cf">
     
-    <div class="ctnWrap">
-        <a href="/2020/06/02/harbor/" class="title">Harbor高可用实践</a>
-        
-            <span style="color: red"> | 置 顶</span>
-        
-        <section class="desc">
-  把博主工作经历中，有关Harbor使用的情况做一些简单介绍，着重介绍一种Harbor高可用方案
+    
+      <a href="/2020/11/18/golang-analyze/" class="link f-fr">golang协程对比java线程⟶</a>
+    
+  </footer>
 </section>
-        <span class="sub">Jun 2, 2020</span> <a class="sub" href="tags/harbor" >｜harbor</a>
-    </div>
 
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1010.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/07/27/health-check-exporter/" class="title">Health-Check-Exporter</a>
-        
-            <span style="color: red"> | 置 顶</span>
-        
-        <section class="desc">
-  Prometheus自定义exporter，基于Go语言开发，可采集集群中所有Pod的健康检查耗时
-</section>
-        <span class="sub">Jul 27, 2020</span> <a class="sub" href="tags/prometheus" >｜prometheus</a>
-    </div>
-
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1028.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/11/18/k8s-authentication/" class="title">Kubernetes集群认证相关内容解析</a>
-        
-        <section class="desc">
-  分析k8s各个组件之间如何认证，客户端访问k8s时如何认证
-</section>
-        <span class="sub">Nov 18, 2020</span> <a class="sub" href="tags/kubernetes" >｜kubernetes</a>
-    </div>
-
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1027.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/11/18/golang-analyze/" class="title">golang协程对比java线程</a>
-        
-        <section class="desc">
-  讨论golang协程与java线程的差异
-</section>
-        <span class="sub">Nov 18, 2020</span> <a class="sub" href="tags/golang" >｜golang</a>
-    </div>
-
-</div>
-
-  <div class="project-card">
-    
-        <div class="imgWrap">
-            <img src="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1026.png" alt=""/>
-        </div>
-    
-    <div class="ctnWrap">
-        <a href="/2020/11/17/binary-tree-maximum-path-sum/" class="title">二叉树中最大路径和</a>
-        
-        <section class="desc">
-  分享一道二叉树算法题
-</section>
-        <span class="sub">Nov 17, 2020</span> <a class="sub" href="tags/algorithm" >｜algorithm</a>
-    </div>
-
-</div>
-
-
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
-  </nav>
-
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<div id="gitalk-container"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: 'df0939e6bbcc32f66c96',
+        clientSecret: '698521e751c5804f9a00471bf21c7ab0c3d1cf8e',
+        id: location.pathname,
+        repo: 'w0nwig.github.io',
+        owner: 'w0nwig',
+        admin: ['w0nwig']
+    })
+    gitalk.render('gitalk-container')
+</script>
 </div>
     <footer id="footer" class="f-cf">
   rongjun0821@gmail.com
