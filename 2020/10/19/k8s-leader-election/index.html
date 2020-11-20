@@ -13,7 +13,7 @@
 <meta property="og:description" content="kube-scheduler和kube-controller-manager两个组件的高可用选主实现原理">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://wufazhuce-1302533045.cos.ap-shanghai.myqcloud.com/wufazhuce-1023.png">
-<meta property="article:published_time" content="2020-10-19T08:09:08.871Z">
+<meta property="article:published_time" content="2020-10-18T16:00:00.000Z">
 <meta property="article:modified_time" content="2020-11-05T07:15:34.365Z">
 <meta property="article:author" content="w0nwig">
 <meta property="article:tag" content="kubernetes">
@@ -47,7 +47,7 @@
 <div id="container">
     <nav id="nav">
   <header class="header">
-    <a href="/" class="title">Coding for your Ambition</a>
+    <a href="/" class="title">be patient, be active</a>
   </header>
   <div class="ctnWrap">
     <div class="icons">
@@ -80,7 +80,7 @@
 </nav>
     <div id="main"><section class="article">
   <h2 class="title">K8S系统组件高可用选主逻辑</h2>
-  <p class="sub">Oct 19, 2020</p>
+  <p class="sub">2020-10-19</p>
   <article class="content">
     <p>我们知道，在K8S的高可用实现中，kube-apiserver是通过启动多副本实例，前面挂负载均衡将请求分发到后端的实例来实现高可用，即多个实例同时提供服务，而kube-scheduler和kube-controller-manager是通过<strong>主备</strong>的方式实现高可用</p>
 <p>先来看一个命令：</p>
@@ -109,6 +109,7 @@ metadata:
     
   </footer>
 </section>
+
 
     <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
 <div id="gitalk-container"></div>

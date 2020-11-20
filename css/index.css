@@ -333,14 +333,17 @@ body {
   font-weight: 600; }
 
 .archive-category > .menu {
-  margin-bottom: 70px; }
+  margin-bottom: 700px; }
   .archive-category > .menu > li {
     margin-top: 10px;
     font-size: 16px;
     line-height: 24px;
     display: flex;
-    justify-content: space-between;
-    line-height: 24px; }
+    position: relative; }
+    .archive-category > .menu > li > .sub {
+      font-size: 12px;
+      opacity: .5;
+      margin-left: 5px; }
     .archive-category > .menu > li > a:hover {
       opacity: 1;
       color: #f0534e; }
@@ -349,6 +352,9 @@ body {
       font-size: 14px;
       min-width: 90px;
       text-align: right; }
+    .archive-category > .menu > li > .date {
+      position: absolute;
+      right: 0; }
 
 .archive-category:last-child > .menu {
   margin-bottom: 0; }
